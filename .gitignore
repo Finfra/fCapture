@@ -1,0 +1,116 @@
+# claudeCode_xcode_Skel
+Issue.md
+noteForHuman.md
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# VSCode
+.history
+*.local.vscode/
+
+
+# Xcode
+xcuserdata/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.xcarchive
+*.canvas
+*.xcframework
+z_old/
+
+# Editors
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# Environment
+.env
+.env.*
+!.env.example
+*.local
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Archives
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Package.resolved
+
+# 빌드 산출 바이너리 (buildAndTest.sh 가 .build/release → bin/ 복사)
+bin/
+
+# Build outputs
+dist/
+build/
+out/
+target/
+*.o
+*.a
+*.so
+*.dylib
+
+# Dependencies
+node_modules/
+vendor/
+.pnp
+.pnp.js
+
+# Cache
+.cache/
+.parcel-cache/
+.npm
+.eslintcache
+.stylelintcache
+*.pyc
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+
+# Temp
+tmp/
+temp/
+*.tmp
+*.bak
+*.orig
+
+GEMINI.md
+_doc_work/z_htm/

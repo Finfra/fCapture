@@ -1,0 +1,6 @@
+{
+    "capturePath": "~/Desktop",
+    "target": "window_pointer",
+    "fileFormat": "window_noshadow_%d_%T",
+    "shadow": false
+}

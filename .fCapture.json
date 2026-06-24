@@ -1,0 +1,9 @@
+{
+  "capturePath": 1,
+  "target": "screen:1",
+  "fileFormat": "nowage@gmail.com_%d_%T",
+  "capturePathArray": [
+    "/Users/nowage/Downloads",
+    "/Users/nowage/df"
+  ]
+}

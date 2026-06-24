@@ -1,0 +1,5 @@
+{
+    "capturePath": "~/df",
+    "target": "all",
+    "fileFormat": "screenAll_%target_%d_%T"
+}

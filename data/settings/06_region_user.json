@@ -1,0 +1,5 @@
+{
+    "target": "region_user",
+    "capturePath": "~/Desktop",
+    "fileFormat": "region_user_%d_%T"
+}

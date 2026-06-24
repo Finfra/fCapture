@@ -1,0 +1,9 @@
+{
+    "target": "screen:1",
+    "capturePath": 1,
+    "capturePathArray": [
+        "~/Desktop/capture",
+        "~/Desktop"
+    ],
+    "fileFormat": "option_capturePath_%d_%T"
+}

@@ -1,0 +1,5 @@
+{
+    "capturePath": "~/Desktop",
+    "target": "screen:2",
+    "fileFormat": "screen2_%d_%T"
+}

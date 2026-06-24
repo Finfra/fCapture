@@ -1,0 +1,25 @@
+{
+  "window.title": "📸 ${rootName}${separator}${activeEditorShort}",
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#f5f7fa",
+    "activityBar.background": "#f5f7fa",
+    "editorError.foreground": "#000000ff",
+    "editorGroup.border": "#f5f7fa",
+    "editorInfo.foreground": "#000000ff",
+    "editorWarning.foreground": "#000000ff",
+    "panel.border": "#f5f7fa",
+    "sash.hoverBorder": "#f5f7fa",
+    "sideBar.border": "#f5f7fa",
+    "statusBar.background": "#d1ddeb",
+    "statusBar.border": "#d1ddeb",
+    "statusBar.debuggingBackground": "#ebdfd1",
+    "statusBar.debuggingBorder": "#ebdfd1",
+    "statusBarItem.hoverBackground": "#adc3dc",
+    "statusBarItem.remoteBackground": "#d1ddeb",
+    "tab.activeBorder": "#f5f7fa",
+    "titleBar.activeBackground": "#d1ddeb",
+    "titleBar.border": "#d1ddeb",
+    "titleBar.inactiveBackground": "#d1ddeb99"
+  },
+  "peacock.color": "#d1ddeb"
+}

@@ -1,0 +1,12 @@
+{
+  "target": "window_active",
+  "capturePath": 0,
+  "capturePathArray": [
+    "~/Desktop/capture",
+    "~/Downloads"
+  ],
+  "fileFormat": "%d_%T_%target",
+  "result": "text",
+  "shadow": false,
+  "window_flash": true
+}

@@ -1,0 +1,12 @@
+{
+    "capturePath": "~/Desktop",
+    "target": "scroll_capture",
+    "fileFormat": "scroll_%d_%T",
+    "scrollConfig": {
+        "scrollAmount": 8,
+        "scrollDelay": 0.5,
+        "maxScrolls": 30,
+        "overlapRatio": 0.25,
+        "scrollMode": "scroll"
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "capturePath": "~/Desktop",
+    "target": "region_static",
+    "fileFormat": "region_static_%d_%T",
+    "staticRegion": {
+        "x": 100,
+        "y": 100,
+        "width": 800,
+        "height": 600
+    }
+}

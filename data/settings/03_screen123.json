@@ -1,0 +1,9 @@
+{
+    "capturePath": "~/df",
+    "target": [
+        "screen:1",
+        "screen:2",
+        "screen:3"
+    ],
+    "fileFormat": "screen123_%target_%d_%T"
+}

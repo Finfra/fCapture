@@ -1,0 +1,546 @@
+# fCapture 파라미터 검증 정의서
+# 목적: QA 에이전트가 이 파일을 기준으로 모든 파라미터의 JSON/CLI 동작을 검증함
+# 각 테스트 케이스는 실행 명령, 기대 결과, 검증 방법을 포함함
+
+# ============================================================
+# 공통 검증 규칙
+# ============================================================
+common:
+  binary: "./bin/fCapture"
+  output_dir: "/tmp/fCapture_qa"  # QA 테스트 전용 출력 디렉토리
+  cleanup: true                    # 테스트 후 출력 파일 삭제
+  log_file: "/tmp/fCapture.log"
+  verify_png: "file --mime-type {file} | grep image/png"
+  verify_file_exists: "test -f {file}"
+
+# ============================================================
+# T01: target 파라미터 검증
+# ============================================================
+T01_target:
+  parameter: "target"
+  description: "캡처 대상 지정 — 모든 target 값이 JSON과 CLI 양쪽에서 동작하는지 검증"
+
+  cases:
+    - id: "T01-01"
+      name: "window (기본 윈도우)"
+      json:
+        file: "data/settings/00_default.json"
+        cmd: "./bin/fCapture data/settings/00_default.json"
+      cli:
+        cmd: "./bin/fCapture -t window -p /tmp/fCapture_qa -F test_window_%T"
+      verify:
+        - "PNG 파일 1개 생성"
+        - "파일 크기 > 0"
+        - "exit code == 0"
+
+    - id: "T01-02"
+      name: "window_active (활성 윈도우)"
+      json:
+        file: "data/settings/07_window_active.json"
+        cmd: "./bin/fCapture data/settings/07_window_active.json"
+      cli:
+        cmd: "./bin/fCapture -t window_active -p /tmp/fCapture_qa -F test_active_%T"
+      verify:
+        - "PNG 파일 1개 생성"
+        - "exit code == 0"
+
+    - id: "T01-03"
+      name: "window_pointer (포인터 위치 윈도우)"
+      json:
+        file: "data/settings/08_window_pointer.json"
+        cmd: "./bin/fCapture data/settings/08_window_pointer.json"
+      cli:
+        cmd: "./bin/fCapture -t window_pointer -p /tmp/fCapture_qa -F test_pointer_%T"
+      verify:
+        - "PNG 파일 1개 생성"
+        - "exit code == 0"
+
+    - id: "T01-04"
+      name: "window_flash (플래시 피드백)"
+      json:
+        file: "data/settings/09_window_flash.json"
+        cmd: "./bin/fCapture data/settings/09_window_flash.json"
+      cli:
+        cmd: "./bin/fCapture -t window_flash -p /tmp/fCapture_qa -F test_flash_%T"
+      verify:
+        - "PNG 파일 1개 생성"
+        - "exit code == 0"
+      note: "파란 테두리 피드백은 시각 확인만 가능"
+
+    - id: "T01-05"
+      name: "screen:1 (첫 번째 디스플레이)"
+      json:
+        file: "data/settings/01_screen1.json"
+        cmd: "./bin/fCapture data/settings/01_screen1.json"
+      cli:
+        cmd: "./bin/fCapture -t screen:1 -p /tmp/fCapture_qa -F test_screen1_%T"
+      verify:
+        - "PNG 파일 1개 생성"
+        - "이미지 해상도 == 디스플레이 해상도"
+        - "exit code == 0"
+
+    - id: "T01-06"
+      name: "screen:2 (두 번째 디스플레이)"
+      json:
+        file: "data/settings/02_screen2.json"
+        cmd: "./bin/fCapture data/settings/02_screen2.json"
+      cli:
+        cmd: "./bin/fCapture -t screen:2 -p /tmp/fCapture_qa -F test_screen2_%T"
+      verify:
+        - "PNG 파일 1개 생성 (모니터 연결 시)"
+        - "exit code == 0"
+      note: "단일 모니터 환경에서는 에러 로그 확인"
+
+    - id: "T01-07"
+      name: "다중 스크린 (배열)"
+      json:
+        file: "data/settings/03_screen123.json"
+        cmd: "./bin/fCapture data/settings/03_screen123.json"
+      cli:
+        cmd: "./bin/fCapture -t screen:1 -t screen:2 -p /tmp/fCapture_qa -F test_multi_%target_%T"
+      verify:
+        - "PNG 파일 N개 생성 (N = 유효 디스플레이 수)"
+        - "각 파일명에 target명 포함"
+        - "exit code == 0"
+
+    - id: "T01-08"
+      name: "all (모든 디스플레이)"
+      json:
+        file: "data/settings/04_screenAll.json"
+        cmd: "./bin/fCapture data/settings/04_screenAll.json"
+      cli:
+        cmd: "./bin/fCapture -t all -p /tmp/fCapture_qa -F test_all_%target_%T"
+      verify:
+        - "PNG 파일 수 == 연결된 디스플레이 수"
+        - "exit code == 0"
+
+    - id: "T01-09"
+      name: "region_static (고정 영역)"
+      json:
+        file: "data/settings/05_region_static.json"
+        cmd: "./bin/fCapture data/settings/05_region_static.json"
+      cli:
+        cmd: "./bin/fCapture -t region_static --region 100,100,800,600 -p /tmp/fCapture_qa -F test_static_%T"
+      verify:
+        - "PNG 파일 1개 생성"
+        - "이미지 크기 == 800x600 (또는 Retina 배수)"
+        - "exit code == 0"
+
+    - id: "T01-10"
+      name: "region_user (사용자 선택 영역)"
+      json:
+        file: "data/settings/06_region_user.json"
+        cmd: "./bin/fCapture data/settings/06_region_user.json"
+      cli:
+        cmd: "./bin/fCapture -t region_user -p /tmp/fCapture_qa -F test_user_%T"
+      verify:
+        - "인터랙티브 선택 UI 표시"
+        - "exit code == 0"
+      auto_testable: false
+      note: "사용자 입력 필요 — 실행 여부만 확인, 자동 검증 불가"
+
+# ============================================================
+# T02: capturePath 파라미터 검증
+# ============================================================
+T02_capturePath:
+  parameter: "capturePath"
+  description: "저장 경로 지정 — 문자열 경로와 인덱스 참조 양쪽 검증"
+
+  cases:
+    - id: "T02-01"
+      name: "문자열 경로 직접 지정"
+      json:
+        cmd: "./bin/fCapture data/settings/00_default.json"
+      cli:
+        cmd: "./bin/fCapture -t window_pointer -p /tmp/fCapture_qa"
+      verify:
+        - "지정 경로에 PNG 파일 생성"
+
+    - id: "T02-02"
+      name: "capturePathArray 인덱스 0"
+      json:
+        file: "data/settings/12_option_capturePathArray0.json"
+        cmd: "./bin/fCapture data/settings/12_option_capturePathArray0.json"
+      cli:
+        note: "capturePathArray는 JSON 전용. CLI에서는 --path로 직접 지정"
+        cmd: "./bin/fCapture -t screen:1 -p ~/Desktop/capture -F test_pathArr0_%T"
+      verify:
+        - "capturePathArray[0] 경로에 파일 생성"
+
+    - id: "T02-03"
+      name: "capturePathArray 인덱스 1"
+      json:
+        file: "data/settings/13_option_capturePathArray1.json"
+        cmd: "./bin/fCapture data/settings/13_option_capturePathArray1.json"
+      cli:
+        cmd: "./bin/fCapture -t screen:1 -p ~/Desktop -F test_pathArr1_%T"
+      verify:
+        - "capturePathArray[1] 경로에 파일 생성"
+
+    - id: "T02-04"
+      name: "존재하지 않는 경로"
+      cli:
+        cmd: "./bin/fCapture -t window_pointer -p /nonexistent/path"
+      verify:
+        - "에러 로그 출력"
+        - "exit code != 0 또는 기본 경로 폴백"
+
+# ============================================================
+# T03: fileFormat 파라미터 검증
+# ============================================================
+T03_fileFormat:
+  parameter: "fileFormat"
+  description: "파일명 템플릿 변수 치환 검증"
+
+  cases:
+    - id: "T03-01"
+      name: "%d 변수 (날짜)"
+      cli:
+        cmd: "./bin/fCapture -t window_pointer -p /tmp/fCapture_qa -F test_%d"
+      verify:
+        - "파일명에 현재 날짜 8자리 포함 (yyyyMMdd)"
+
+    - id: "T03-02"
+      name: "%T 변수 (시간)"
+      cli:
+        cmd: "./bin/fCapture -t window_pointer -p /tmp/fCapture_qa -F test_%T"
+      verify:
+        - "파일명에 현재 시간 6자리 포함 (HHmmss)"
+
+    - id: "T03-03"
+      name: "%target 변수"
+      cli:
+        cmd: "./bin/fCapture -t screen:1 -p /tmp/fCapture_qa -F test_%target"
+      verify:
+        - "파일명에 'screen1' 포함"
+
+    - id: "T03-04"
+      name: "%id 변수 (ID 카운터)"
+      cli:
+        cmd: "./bin/fCapture -t window_pointer -p /tmp/fCapture_qa -F test_%id"
+      verify:
+        - "파일명에 3자리 숫자 포함 (ex: 001)"
+        - "연속 실행 시 증가"
+
+    - id: "T03-05"
+      name: "모든 변수 조합"
+      cli:
+        cmd: "./bin/fCapture -t screen:1 -p /tmp/fCapture_qa -F test_%d_%T_%target_%id"
+      verify:
+        - "파일명 형식: test_YYYYMMDD_HHMMSS_screen1_NNN.png"
+
+    - id: "T03-06"
+      name: "변수 없는 고정 파일명"
+      cli:
+        cmd: "./bin/fCapture -t window_pointer -p /tmp/fCapture_qa -F fixed_name"
+      verify:
+        - "파일명: fixed_name.png"
+
+# ============================================================
+# T04: shadow 파라미터 검증
+# ============================================================
+T04_shadow:
+  parameter: "shadow"
+  description: "윈도우 그림자 포함/제거 검증"
+
+  cases:
+    - id: "T04-01"
+      name: "그림자 제거 (false)"
+      json:
+        file: "data/settings/15_option_shadow_false.json"
+        cmd: "./bin/fCapture data/settings/15_option_shadow_false.json"
+      cli:
+        cmd: "./bin/fCapture -t window_pointer --no-shadow -p /tmp/fCapture_qa -F test_noshadow_%T"
+      verify:
+        - "PNG 파일 생성"
+        - "exit code == 0"
+
+    - id: "T04-02"
+      name: "그림자 포함 (true)"
+      json:
+        file: "data/settings/16_option_shadow_true.json"
+        cmd: "./bin/fCapture data/settings/16_option_shadow_true.json"
+      cli:
+        cmd: "./bin/fCapture -t window_pointer --shadow -p /tmp/fCapture_qa -F test_shadow_%T"
+      verify:
+        - "PNG 파일 생성"
+        - "exit code == 0"
+      note: "shadow=true 이미지가 false보다 크기가 큰지 비교하면 정확도 향상"
+
+# ============================================================
+# T05: window_flash 파라미터 검증
+# ============================================================
+T05_window_flash:
+  parameter: "window_flash"
+  description: "캡처 후 파란 테두리 피드백 표시 여부 검증"
+
+  cases:
+    - id: "T05-01"
+      name: "플래시 활성화"
+      cli:
+        cmd: "./bin/fCapture -t window_pointer --flash -p /tmp/fCapture_qa -F test_flash_on_%T"
+      verify:
+        - "PNG 파일 생성"
+        - "exit code == 0"
+      note: "시각적 피드백은 수동 확인"
+
+    - id: "T05-02"
+      name: "플래시 비활성화"
+      cli:
+        cmd: "./bin/fCapture -t window_pointer --no-flash -p /tmp/fCapture_qa -F test_flash_off_%T"
+      verify:
+        - "PNG 파일 생성"
+        - "exit code == 0"
+        - "피드백 없이 즉시 완료"
+
+# ============================================================
+# T06: result 파라미터 검증
+# ============================================================
+T06_result:
+  parameter: "result"
+  description: "출력 형식 검증 — stdout 내용을 형식별로 검증"
+
+  cases:
+    - id: "T06-01"
+      name: "text 형식 (기본)"
+      json:
+        file: "data/settings/17_option_result_text.json"
+        cmd: "./bin/fCapture data/settings/17_option_result_text.json"
+      cli:
+        cmd: "./bin/fCapture -t window_pointer -R text -p /tmp/fCapture_qa -F test_result_text_%T"
+      verify:
+        - "stdout에 사람이 읽을 수 있는 메시지 출력"
+        - "JSON 형식이 아님"
+
+    - id: "T06-02"
+      name: "json 형식"
+      json:
+        file: "data/settings/18_option_result_json.json"
+        cmd: "./bin/fCapture data/settings/18_option_result_json.json"
+      cli:
+        cmd: "./bin/fCapture -t window_pointer -R json -p /tmp/fCapture_qa -F test_result_json_%T"
+      verify:
+        - "stdout이 유효한 JSON 배열"
+        - "각 요소에 filePath, fileName, target, id 키 존재"
+        - "echo $output | python3 -m json.tool 성공"
+
+    - id: "T06-03"
+      name: "onlyPath 형식"
+      json:
+        file: "data/settings/19_option_result_onlyPath.json"
+        cmd: "./bin/fCapture data/settings/19_option_result_onlyPath.json"
+      cli:
+        cmd: "./bin/fCapture -t window_pointer -R onlyPath -p /tmp/fCapture_qa -F test_result_path_%T"
+      verify:
+        - "stdout의 각 줄이 파일 경로"
+        - "해당 경로에 실제 파일 존재"
+        - "부가 메시지 없음"
+
+# ============================================================
+# T07: backupOtherScreen 파라미터 검증
+# ============================================================
+T07_backupOtherScreen:
+  parameter: "backupOtherScreen"
+  description: "스크린 캡처 시 반대편 화면 자동 백업 검증"
+
+  cases:
+    - id: "T07-01"
+      name: "screen:1 캡처 + 백업"
+      json:
+        file: "data/settings/14_option_backupOtherScreen.json"
+        cmd: "./bin/fCapture data/settings/14_option_backupOtherScreen.json"
+      cli:
+        cmd: "./bin/fCapture -t screen:1 --backup /tmp/fCapture_qa/backup -p /tmp/fCapture_qa -F test_backup_%T"
+      verify:
+        - "메인 경로에 screen:1 캡처 파일 생성"
+        - "백업 경로에 backup_ 접두사 파일 생성 (멀티 모니터 시)"
+      note: "단일 모니터 환경에서는 백업 대상 없음 → 백업 미생성 정상"
+
+    - id: "T07-02"
+      name: "윈도우 캡처 시 백업 미동작"
+      cli:
+        cmd: "./bin/fCapture -t window_pointer --backup /tmp/fCapture_qa/backup -p /tmp/fCapture_qa -F test_backup_win_%T"
+      verify:
+        - "메인 캡처만 수행"
+        - "백업 경로에 파일 미생성"
+
+# ============================================================
+# T08: staticRegion 파라미터 검증
+# ============================================================
+T08_staticRegion:
+  parameter: "staticRegion"
+  description: "고정 좌표 영역 캡처 검증"
+
+  cases:
+    - id: "T08-01"
+      name: "유효한 영역 좌표"
+      json:
+        file: "data/settings/05_region_static.json"
+        cmd: "./bin/fCapture data/settings/05_region_static.json"
+      cli:
+        cmd: "./bin/fCapture -t region_static --region 100,100,800,600 -p /tmp/fCapture_qa -F test_region_%T"
+      verify:
+        - "PNG 파일 1개 생성"
+        - "이미지 크기 ≈ 800x600 (Retina 배수 허용)"
+        - "exit code == 0"
+
+    - id: "T08-02"
+      name: "region 누락 (target=region_static인데 --region 없음)"
+      cli:
+        cmd: "./bin/fCapture -t region_static -p /tmp/fCapture_qa"
+      verify:
+        - "에러 로그: staticRegion 미설정"
+        - "exit code != 0 또는 에러 메시지 출력"
+
+    - id: "T08-03"
+      name: "잘못된 좌표 형식"
+      cli:
+        cmd: "./bin/fCapture -t region_static --region abc,def,ghi,jkl -p /tmp/fCapture_qa"
+      verify:
+        - "에러 메시지 출력"
+        - "exit code != 0"
+
+# ============================================================
+# T09: CLI 스위치 (기존 유지) 검증
+# ============================================================
+T09_cli_switches:
+  parameter: "기존 CLI 스위치"
+  description: "기존 -s, -w, -r, -f, -h 스위치가 새 옵션 추가 후에도 정상 동작하는지 검증"
+
+  cases:
+    - id: "T09-01"
+      name: "-h (도움말)"
+      cmd: "./bin/fCapture -h"
+      verify:
+        - "Usage 텍스트 출력"
+        - "새 CLI 옵션(--target, --path 등)도 도움말에 포함"
+        - "exit code == 0"
+
+    - id: "T09-02"
+      name: "-s (스크린 캡처)"
+      cmd: "./bin/fCapture -s"
+      verify:
+        - "~/.fCapture/defaultScreen.json 로드"
+        - "스크린 캡처 실행"
+        - "exit code == 0"
+
+    - id: "T09-03"
+      name: "-w (윈도우 캡처)"
+      cmd: "./bin/fCapture -w"
+      verify:
+        - "~/.fCapture/defaultWindow.json 로드"
+        - "윈도우 캡처 실행"
+        - "exit code == 0"
+
+    - id: "T09-04"
+      name: "-r (영역 캡처)"
+      cmd: "./bin/fCapture -r"
+      verify:
+        - "~/.fCapture/defaultRegion.json 로드"
+        - "영역 캡처 UI 표시"
+      auto_testable: false
+
+    - id: "T09-05"
+      name: "-f (영역 좌표 고정)"
+      cmd: "./bin/fCapture -f"
+      verify:
+        - "마지막 영역 좌표를 defaultRegion.json에 저장"
+        - "exit code == 0"
+
+    - id: "T09-06"
+      name: "인수 없이 실행"
+      cmd: "./bin/fCapture"
+      verify:
+        - "~/.fCapture/defaultSetting.json 로드"
+        - "캡처 실행"
+        - "exit code == 0"
+
+# ============================================================
+# T10: 하이브리드 모드 검증 (JSON + CLI 오버라이드)
+# ============================================================
+T10_hybrid:
+  parameter: "하이브리드 모드"
+  description: "JSON 파일 로드 후 CLI 옵션으로 일부 파라미터를 오버라이드하는 동작 검증"
+
+  cases:
+    - id: "T10-01"
+      name: "JSON + result 오버라이드"
+      cmd: "./bin/fCapture data/settings/01_screen1.json -R json"
+      verify:
+        - "01_screen1.json의 target(screen:1) 사용"
+        - "result는 CLI의 json으로 오버라이드"
+        - "stdout이 유효한 JSON"
+
+    - id: "T10-02"
+      name: "JSON + path 오버라이드"
+      cmd: "./bin/fCapture data/settings/00_default.json -p /tmp/fCapture_qa"
+      verify:
+        - "JSON의 target 사용"
+        - "저장 경로는 /tmp/fCapture_qa로 오버라이드"
+
+    - id: "T10-03"
+      name: "JSON + shadow 오버라이드"
+      cmd: "./bin/fCapture data/settings/15_option_shadow_false.json --shadow"
+      verify:
+        - "shadow=false인 JSON에 --shadow로 true 오버라이드"
+
+    - id: "T10-04"
+      name: "JSON + 다중 오버라이드"
+      cmd: "./bin/fCapture data/settings/00_default.json -p /tmp/fCapture_qa -R json --no-shadow -F override_%T"
+      verify:
+        - "path, result, shadow, fileFormat 모두 CLI 값 사용"
+        - "target은 JSON의 window 사용"
+
+# ============================================================
+# T11: 에러 케이스 검증
+# ============================================================
+T11_error:
+  parameter: "에러 처리"
+  description: "잘못된 입력에 대한 에러 처리 검증"
+
+  cases:
+    - id: "T11-01"
+      name: "존재하지 않는 JSON 파일"
+      cmd: "./bin/fCapture /nonexistent/config.json"
+      verify:
+        - "에러 메시지 출력"
+        - "exit code != 0"
+
+    - id: "T11-02"
+      name: "잘못된 target 값"
+      cmd: "./bin/fCapture -t invalid_target"
+      verify:
+        - "에러 로그 출력"
+
+    - id: "T11-03"
+      name: "알 수 없는 CLI 옵션"
+      cmd: "./bin/fCapture --unknown-option"
+      verify:
+        - "에러 메시지 또는 도움말 출력"
+
+    - id: "T11-04"
+      name: "--result에 잘못된 값"
+      cmd: "./bin/fCapture -R invalid_format"
+      verify:
+        - "에러 메시지 출력"
+        - "유효 값 안내 (text, json, onlyPath)"
+
+# ============================================================
+# QA 테스트 실행 가이드
+# ============================================================
+qa_guide:
+  description: "QA 에이전트 실행 절차"
+  steps:
+    - "1. /tmp/fCapture_qa 디렉토리 생성"
+    - "2. 이 파일의 각 테스트 케이스를 순서대로 실행"
+    - "3. json.cmd가 있으면 JSON 방식 먼저 실행"
+    - "4. cli.cmd가 있으면 CLI 방식 실행"
+    - "5. verify 항목을 하나씩 확인"
+    - "6. auto_testable: false인 케이스는 스킵하고 '수동 확인 필요'로 표시"
+    - "7. 결과를 테이블로 출력 (ID | 이름 | JSON 결과 | CLI 결과 | 판정)"
+    - "8. /tmp/fCapture_qa 정리"
+  result_format: |
+    | ID      | 테스트명               | JSON | CLI  | 판정 |
+    | ------- | ---------------------- | ---- | ---- | ---- |
+    | T01-01  | window (기본 윈도우)   | PASS | PASS | OK   |
+    | T01-10  | region_user            | SKIP | SKIP | 수동 |

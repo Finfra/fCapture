@@ -1,0 +1,6 @@
+{
+    "capturePath": "~/Desktop",
+    "target": "window_pointer",
+    "fileFormat": "window_%d_%T",
+    "backupOtherScreen": "~/Pictures/fCaptureBackup"
+}

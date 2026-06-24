@@ -1,0 +1,5 @@
+{
+    "capturePath": "~/Desktop",
+    "target": "window_active",
+    "fileFormat": "window_active_%d_%T"
+}

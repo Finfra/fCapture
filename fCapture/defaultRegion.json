@@ -1,0 +1,18 @@
+{
+  "target": "region_static",
+  "capturePath": 0,
+  "capturePathArray": [
+    "~/Desktop/capture",
+    "~/Downloads"
+  ],
+  "fileFormat": "%d_%T_%target",
+  "result": "text",
+  "staticRegion": {
+    "x": 0,
+    "y": 0,
+    "width": 1920,
+    "height": 1080
+  },
+  "shadow": false,
+  "window_flash": true
+}

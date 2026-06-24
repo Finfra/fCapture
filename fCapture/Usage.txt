@@ -1,0 +1,66 @@
+fCapture - macOS 스크린 캡처 CLI 도구
+
+Usage:
+  fCapture [options]
+  fCapture [config.json]
+  fCapture [config.json] [cli-options]
+
+Options (기존):
+  (없음)            ~/.fCapture/defaultSetting.json으로 실행
+  -v, --version     버전 출력
+  -h, --help        도움말 출력
+  -s, --screen      ~/.fCapture/defaultScreen.json으로 스크린 캡처
+  -r, --region      ~/.fCapture/defaultRegion.json으로 영역 캡처
+  -w, --window      ~/.fCapture/defaultWindow.json으로 윈도우 캡처
+  -f, --fixRegion   마지막 region_user 좌표를 defaultRegion.json에 적용
+  [config.json]     지정한 JSON 설정 파일로 실행
+
+신규 CLI 옵션 (v0.11+):
+  -t, --target <value>      캡처 대상 (반복 가능, 기본: window_pointer)
+  -p, --path <path>         저장 경로 (기본: ~/Desktop)
+  -F, --format <template>   파일명 템플릿 (기본: %d_%T_%target)
+  -R, --result <format>     출력 형식: text/json/onlyPath (기본: text)
+      --shadow              윈도우 그림자 포함
+      --no-shadow           윈도우 그림자 제거 (기본)
+      --flash               캡처 플래시 피드백 활성화 (기본)
+      --no-flash            캡처 플래시 피드백 비활성화
+      --region <x,y,w,h>   고정 영역 좌표 (region_static 타겟 필수)
+      --backup <path>       다른 화면 백업 저장 경로
+      --relay <N>           캡처를 N초 지연 후 실행 (예: --relay 3)
+      --scroll              스크롤 캡처 시 마우스스크롤 방식 사용 (기본: PageDown 방식)
+      --scroll-region <mode>  스크롤 영역 모드: auto(AX감지)/rect(수동)/window(전체, 기본: auto)
+      --scroll-region-rect <x,y,w,h>  스크롤 영역 수동 지정 (윈도우 좌상단 기준, 논리 px)
+
+  scroll_capture    자동 스크롤 캡처 + 수직 스티칭 (긴 페이지 전체 캡처)
+                    regionMode: auto → AX로 스크롤 영역 감지 후 해당 영역만 크롭
+                    regionMode: rect → 수동 지정 영역만 크롭
+                    regionMode: window → 윈도우 전체 (기존 방식)
+
+Target 종류:
+  window_active     현재 최상단 윈도우 캡처 (조용히)
+  window_flash      현재 최상단 윈도우 캡처 + 캡처 영역 flash 피드백 (0.5초 파란 테두리)
+  window_pointer    마우스 커서 위치의 윈도우 캡처
+  screen:N          N번 디스플레이 캡처 (screen:1, screen:2, ...)
+  all               모든 디스플레이 캡처
+  region_user       마우스 드래그로 영역 선택 캡처
+  region_static     JSON staticRegion 좌표로 고정 영역 캡처
+
+Examples:
+  fCapture                                              # 기본 설정으로 캡처
+  fCapture -s                                           # 화면 캡처 (defaultScreen.json)
+  fCapture -r                                           # 영역 캡처 (defaultRegion.json)
+  fCapture -w                                           # 윈도우 캡처 (defaultWindow.json)
+  fCapture -f                                           # 마지막 영역 좌표 고정
+  fCapture ~/my_config.json                             # 사용자 지정 설정으로 캡처
+  fCapture data/settings/09_window_flash.json           # flash 피드백과 함께 윈도우 캡처
+  fCapture -t screen:1 -R json                          # screen:1 캡처, JSON 출력
+  fCapture -t screen:1 -t screen:2 -p ~/Desktop/caps   # 다중 스크린 동시 캡처
+  fCapture -t window_pointer --no-shadow -p /tmp        # 그림자 없는 윈도우 캡처
+  fCapture --region 100,100,800,600 -p ~/Desktop        # 고정 영역 캡처
+  fCapture config.json -R json --no-shadow              # JSON 설정 + CLI 오버라이드
+  fCapture --relay 3 -t window_active                   # 3초 지연 후 활성 윈도우 캡처
+
+설정 파일 위치: ~/.fCapture/
+로그 파일:     /tmp/fCapture.log
+
+Made by nowage (https://finfra.kr/nowage)

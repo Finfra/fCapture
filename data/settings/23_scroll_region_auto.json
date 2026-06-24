@@ -1,0 +1,10 @@
+{
+    "capturePath": "~/Desktop",
+    "target": "scroll_capture",
+    "fileFormat": "scroll_region_%d_%T",
+    "scrollConfig": {
+        "maxScrolls": 3,
+        "scrollDelay": 0.5,
+        "regionMode": "auto"
+    }
+}

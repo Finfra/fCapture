@@ -1,0 +1,16 @@
+{
+  "target": "screen:1",
+  "capturePath": 0,
+  "capturePathArray": [
+    "~/Desktop/capture",
+    "~/Downloads"
+  ],
+  "fileFormat": "%d_%T_%target",
+  "result": "text",
+  "backupOtherScreen": "~/Pictures/fCaptureBackup",
+  "shadow": false,
+  "window_flash": true,
+  "scrollConfig": {
+    "excludeApps": ["iTerm2", "Terminal"]
+  }
+}
