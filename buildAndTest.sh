@@ -79,19 +79,27 @@ if [[ -f ".fCapture.json" ]]; then
 fi
 
 # 4. ~/.bin/ 디렉토리로도 복사 (시스템 전역 사용을 위해)
-echo -e "${BLUE}📦 Copying to ~/.bin/ for global access...${NC}"
-mkdir -p ~/.bin
-if cp .build/release/fCapture ~/.bin/; then
-    echo -e "${GREEN}✅ Executable copied to ~/.bin/fCapture${NC}"
-    
-    # PATH에 ~/.bin이 없으면 안내 메시지
-    if [[ ":$PATH:" != *":$HOME/.bin:"* ]]; then
-        echo -e "${YELLOW}💡 Tip: Add ~/.bin to your PATH for global access:${NC}"
-        echo "   echo 'export PATH=\"\$HOME/.bin:\$PATH\"' >> ~/.zshrc"
-        echo "   source ~/.zshrc"
-    fi
+# ⚠️ ~/.bin/fCapture 가 brew(fcapture) symlink 면 복사 건너뜀.
+#    cp 는 symlink 를 따라가 원본(/opt/homebrew/bin/fcapture)을 덮어쓰므로 brew 바이너리 오염 위험.
+#    Issue22(brew 배포) 이후 ~/.bin/fCapture → /opt/homebrew/bin/fcapture symlink 통일.
+if [[ -L "$HOME/.bin/fCapture" ]]; then
+    echo -e "${YELLOW}⏭  ~/.bin/fCapture 는 brew(fcapture) symlink → 전역 복사 건너뜀 (brew 원본 오염 방지)${NC}"
+    echo -e "${YELLOW}   로컬 빌드 테스트: ./bin/fCapture   |   배포본 갱신: brew upgrade fcapture${NC}"
 else
-    echo -e "${YELLOW}⚠️  Failed to copy to ~/.bin/ (not critical)${NC}"
+    echo -e "${BLUE}📦 Copying to ~/.bin/ for global access...${NC}"
+    mkdir -p ~/.bin
+    if cp .build/release/fCapture ~/.bin/; then
+        echo -e "${GREEN}✅ Executable copied to ~/.bin/fCapture${NC}"
+
+        # PATH에 ~/.bin이 없으면 안내 메시지
+        if [[ ":$PATH:" != *":$HOME/.bin:"* ]]; then
+            echo -e "${YELLOW}💡 Tip: Add ~/.bin to your PATH for global access:${NC}"
+            echo "   echo 'export PATH=\"\$HOME/.bin:\$PATH\"' >> ~/.zshrc"
+            echo "   source ~/.zshrc"
+        fi
+    else
+        echo -e "${YELLOW}⚠️  Failed to copy to ~/.bin/ (not critical)${NC}"
+    fi
 fi
 
 # 상위 디렉토리로 돌아가기

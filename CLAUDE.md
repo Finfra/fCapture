@@ -69,6 +69,23 @@ fCapture data/settings/01_screen1.json  # JSON 설정 지정
 * **글로벌 배포**: `~/.bin/fCapture`
 * **상태 파일**: `~/.fCapture/info_stateManager.json`
 
+## Homebrew 배포 (Issue22, 2026-06-24)
+
+* **소스 repo**: https://github.com/Finfra/fCapture (public, PolyForm Noncommercial 1.0.0)
+* **tap**: https://github.com/Finfra/homebrew-tap → `Formula/fcapture.rb`
+* **설치**: `brew install finfra/tap/fcapture` (명령어 = 소문자 `fcapture`)
+* **릴리즈 절차·설계 SSOT**: `_doc_arch/brew-deploy-design.md`
+* **로컬 백업 태그**: `backup/pre-brew` (공개 전 원본 57커밋, 미push) — origin/main 은 orphan 클린 단일커밋
+
+## ⚠️ 명령 이름 / symlink 통일 (에러 예방)
+
+* brew본 = `fcapture`(소문자). 대문자 `fCapture` 호환 위해 symlink 통일(jm4·jma):
+  `ln -sf /opt/homebrew/bin/fcapture ~/.bin/fCapture`
+* 글로벌 `fcapture` 스킬이 `~/.bin/fCapture` 참조 → symlink 로 brew본 해소(스킬 무수정 호환)
+* **buildAndTest.sh 주의**: `~/.bin/fCapture` 가 symlink 면 `cp` 가 brew 원본을 덮어쓸 위험 → 스크립트에 symlink 가드 추가됨(symlink 시 ~/.bin 복사 skip). **로컬 빌드 테스트는 `./bin/fCapture`**, 배포본 갱신은 `brew upgrade fcapture`.
+
+> 정정: 위 "구조"의 `bin/fCapture` 는 쉘 래퍼가 아니라 빌드 바이너리 복사본임(buildAndTest 가 `.build/release/fCapture` → `bin/`, `~/.bin/` 복사). `bin/`·`.build/` 는 `.gitignore` 등록되어 repo 미포함.
+
 # Claude Code 커맨드 (`.claude/commands/`)
 
 | 커맨드         | 설명                                                             |
