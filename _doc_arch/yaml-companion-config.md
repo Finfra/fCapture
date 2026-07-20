@@ -5,6 +5,8 @@ date: 2026-06-15
 ---
 
 > 개정 (2026-06-15): 코드(`ScreenCaptureApp.swift` resolveRawConfigReferences·findCompanionYAML·parseSimpleYAML·parseYAMLArrays) 대조 결과 본 문서의 메커니즘 기술은 정합함. 번들이 실제 자동 생성하는 기본 템플릿 파일명(`default.yml`)을 명시 보강함(기존 본문의 `t4.default.yml` 은 jm4 머신 인스턴스 예시).
+>
+> 개정 (2026-07-20, Issue23): `_doc_arch` ↔ 소스 정합성 감사. companion 탐색 규칙의 순서 서술이 실제 루프 구조와 달라 정정하고, `t4.basePath.txt → t4.default.yml` 자동 연결 주장이 코드상 성립하지 않음을 확인하여 🔧 [FIXME] 로 명시함. 참조 함수 9종·`relay: Double?` 필드는 실존 확인됨.
 
 # 개요
 
@@ -95,10 +97,28 @@ fCapture jm4_Screen.json
 
 `findCompanionYAML` 은 참조 경로가 존재하지 않을 때 형제 파일을 자동 탐색한다.
 
-1. 전체 baseName: `{baseName}.default.yaml → {baseName}.yaml → {baseName}.yml`
-2. 첫 컴포넌트만: `{firstPart}.default.yaml → …`
+진입 가드 2개가 먼저 걸린다. 둘 중 하나라도 걸리면 탐색 없이 `nil` 을 반환한다.
 
-덕분에 `t4.basePath.txt` placeholder가 `t4.default.yml` 로 자동 연결될 수 있다.
+* 참조 경로가 이미 `.yaml`·`.yml` 로 끝나면 → 탐색 불필요
+* 참조 경로의 파일이 실제로 존재하면 → 탐색 불필요
+
+탐색은 **확장자가 바깥 루프**이고 baseName/firstPart 가 안쪽이다. 즉 baseName 후보를 전부 훑고 나서 firstPart 로 넘어가는 것이 아니라, 확장자 하나마다 baseName → firstPart 순으로 교대 확인한다.
+
+`t4.basePath.txt` 를 참조했을 때의 실제 탐색 순서(baseName=`t4.basePath`, firstPart=`t4`):
+
+| 순서 | 후보 파일명                  |
+| :--: | :--------------------------- |
+| 1    | `t4.basePath.default.yaml`   |
+| 2    | `t4.default.yaml`            |
+| 3    | `t4.basePath.yaml`           |
+| 4    | `t4.yaml`                    |
+| 5    | `t4.basePath.yml`            |
+| 6    | `t4.yml`                     |
+
+🔧 [FIXME] **`{baseName}.default.yml` 조합은 후보에 없다.** 확장자 목록이 `["default.yaml", "yaml", "yml"]` 이라 `.default` 접미는 `.yaml` 하고만 결합한다. 그런데 실제 운영 파일과 번들 템플릿은 모두 `.yml` 확장자(`~/.fCapture/jm4/t4.default.yml`, 번들 `default.yml`)다. 따라서 `t4.basePath.txt` placeholder 가 `t4.default.yml` 로 자동 연결되는 일은 **일어나지 않는다** — 이 문서의 이전 판이 그렇게 서술했으나 코드와 맞지 않았다.
+
+* 영향: `.default.yml` 을 노린 companion fallback 이 무동작. 위 표의 6번(`t4.yml`)처럼 `.default` 없는 이름을 쓰거나, 참조 경로에 실제 yml 경로를 직접 적는 현재 방식(`jm4_Screen.json` 이 `{~/.fCapture/jm4/t4.default.yml}` 을 직접 지정)으로는 정상 동작하므로 운영상 드러나지 않았다.
+* 교정 방향: 확장자 목록에 `"default.yml"` 추가. 코드 변경이므로 별도 이슈 후보로 남긴다.
 
 # relay 설정 지원 (Issue21)
 

@@ -7,8 +7,10 @@ date: 2026-06-24
 # 개요
 
 fCapture(macOS Swift CLI)를 Homebrew 로 설치 가능하게 하는 배포 설계.
-현재 배포는 `buildAndTest.sh` → `~/.bin/fCapture` 로컬 복사뿐이며 외부 사용자 설치 경로가 없음.
 본 문서는 `brew install` 단일 명령으로 설치·업그레이드하는 구조와 그 운영 흐름을 정의함.
+
+* **현재 상태(2026-06-24 Issue22 완료)**: `brew install finfra/tap/fcapture` 로 설치 가능. 로컬 개발 배포(`buildAndTest.sh` → `bin/`·`~/.bin/`)와 공존함.
+* 설계 착수 시점의 배경은 로컬 복사뿐이고 외부 사용자 설치 경로가 없다는 것이었음 — 아래 "선결 조건" 절 참조.
 
 스코프:
 
@@ -25,20 +27,20 @@ fCapture(macOS Swift CLI)를 Homebrew 로 설치 가능하게 하는 배포 설�
 * 패키지 정의: [`fCapture/Package.swift`](../fCapture/Package.swift) (SPM, macOS 13+, executable + resources)
 * 캡처 모드 용어: [`_doc_arch/Glossary.md`](./Glossary.md)
 
-# 선결 조건 (현재 미충족)
+# 선결 조건 (충족 완료)
 
-🚧 [TODO] 아래 2개는 brew 배포 착수 전 필수. 현재 프로젝트에 미존재.
+아래 2개는 brew 배포 착수 전 필수 조건이었음. Issue22 에서 모두 충족됨.
 
-* **GitHub repo (origin remote)**: `git remote -v` 결과 비어 있음. Formula `url`·릴리즈 태그·source tarball 의 호스트가 필요함.
-    - ✅ 결정(2026-06-24): owner = **Finfra** org. `github.com/Finfra/fCapture` (소스) + `Finfra/homebrew-tap` (tap).
-* **VERSION 파일**: git root 에 `VERSION` 파일 미존재. 현재 버전 문자열은 코드 하드코딩(`ScreenCaptureApp.swift:420 appVersion = "1.0.18"`).
-    - version-manager-m 규칙상 `{git_root}/VERSION` 이 단일 SSOT. brew 도입과 함께 생성 + 빌드 시 sed 주입.
+* **GitHub repo (origin remote)**: ✅ 충족 — `origin` = `https://github.com/Finfra/fCapture.git`.
+    - 결정(2026-06-24): owner = **Finfra** org. `github.com/Finfra/fCapture` (소스) + `Finfra/homebrew-tap` (tap).
+* **VERSION 파일**: ✅ 충족 — git root 에 `VERSION` 생성됨. version-manager-m 규칙상 `{git_root}/VERSION` 이 단일 SSOT.
+    - 착수 전에는 버전 문자열이 코드 하드코딩뿐이었음. 현재는 `buildAndTest.sh` 가 빌드 직전 `VERSION` 값을 [`ScreenCaptureApp.swift`](../fCapture/ScreenCaptureApp.swift) 의 `static let appVersion` 라인에 `sed` 주입함 (구현: `buildAndTest.sh` "VERSION SSOT 주입" 절).
 
 # 배포 방식 결정
 
 Homebrew CLI 배포는 2가지 경로가 있음. fCapture 특성(Screen Recording 권한 필요, 단일 SPM 타깃, arm64+x86_64)을 기준으로 비교.
 
-| 기준               | A. source-build (채택)                          | B. pre-built binary (release asset)              |
+| 기준               | A. source-build (초기 안, 폐기)                 | B. pre-built binary (release asset, **채택**)    |
 | :----------------- | :---------------------------------------------- | :----------------------------------------------- |
 | Formula 동작       | `swift build -c release` 후 `bin.install`       | release 에 올린 바이너리 tarball download         |
 | 빌드 의존성        | 사용자 Xcode CLT 필요                            | 없음 (다운로드만)                                |
@@ -72,17 +74,19 @@ brew install fcapture
 fcapture --version
 ```
 
-# Formula 설계 (source-build)
+# Formula 설계 (pre-built binary)
 
-`Formula/fcapture.rb` (실제 배포본 — `version`·`sha256` 은 릴리즈마다 갱신). SSOT 는 tap repo `Finfra/homebrew-tap`, 소스 repo 의 `Formula/fcapture.rb` 는 동기화 사본.
+실제 배포본은 [`Formula/fcapture.rb`](../Formula/fcapture.rb) 이며 `url`·`version`·`sha256` 은 릴리즈마다 갱신됨. SSOT 는 tap repo `Finfra/homebrew-tap`, 소스 repo 의 `Formula/fcapture.rb` 는 동기화 사본.
+
+아래는 구조를 보이기 위한 발췌다. **버전 의존 필드(`url`·`version`·`sha256`)의 실제 값은 위 실파일이 기준이며, 본 문서에 값을 복제하지 않는다** — 릴리즈마다 갱신되는 값을 문서에 박으면 곧바로 stale 해지기 때문이다.
 
 ```ruby
 class Fcapture < Formula
   desc "macOS screen capture CLI (CoreGraphics) with JSON/YAML presets"
   homepage "https://github.com/Finfra/fCapture"
-  url "https://github.com/Finfra/fCapture/releases/download/v1.0.18/fCapture-1.0.18.tar.gz"
-  version "1.0.18"
-  sha256 "<release tarball sha256>"
+  url "https://github.com/Finfra/fCapture/releases/download/v{VERSION}/fCapture-{VERSION}.tar.gz"
+  version "{VERSION}"            # = git root 의 VERSION 파일 값
+  sha256 "{tarball sha256}"      # = shasum -a 256 결과, 릴리즈 시 주입
   license "PolyForm-Noncommercial-1.0.0"  # 소스 공개/비상업 무료/상업 유료 (prj1 모델)
 
   depends_on :macos
@@ -105,7 +109,8 @@ end
 
 * **바이너리 release asset**: tarball 안에 universal2 `fcapture` 바이너리 1개. `bin.install "fcapture"` 만. Xcode 의존·`--disable-sandbox` 불요(빌드 안 함).
 * **명령 이름 소문자 `fcapture`**: brew 관례. macOS case-insensitive APFS 에서 로컬 `~/.bin/fCapture` 와 동일 경로 취급 → 개발 머신은 로컬 배포본이 PATH shadow. 최종 사용자(로컬 배포본 없음)는 영향 없음.
-* **resources**: `.build/release/fCapture_fCapture.bundle` 이 분리 생성되나 코드가 `Bundle.main` 사용(`ScreenCaptureApp.swift:858,887,922,960`) → **미인식**. 바이너리만 배포해도 캡처 동작 무지장(모든 접근부 graceful fallback). 누락 영향은 `~/.fCapture/` 템플릿 자동생성(편의 기능) 스킵뿐 → tarball 에 bundle 미포함.
+* **resources**: `.build/release/fCapture_fCapture.bundle` 이 분리 생성되나 코드가 `Bundle.main` 을 사용해 → **미인식**. 바이너리만 배포해도 캡처 동작 무지장(모든 접근부 graceful fallback). 누락 영향은 `~/.fCapture/` 템플릿 자동생성(편의 기능) 스킵뿐 → tarball 에 bundle 미포함.
+    - `Bundle.main` 접근부는 [`ScreenCaptureApp.swift`](../fCapture/ScreenCaptureApp.swift) 의 `createBundleYAMLIfNeeded`(yml 템플릿)·`loadOrCreateDefaultSetting`(defaultSetting.json)·`createBundleFileIfNeeded`(프리셋 json)·`printHelp`(Usage.txt) 4곳. 심볼명 기준으로 찾을 것 — 라인 번호는 코드 변경에 따라 밀린다.
     - 🔧 [FIXME] 정석은 코드를 `Bundle.module` 로 전환. 현 fallback 의존은 기능상 OK 이나 템플릿 자동생성 무동작 → 별도 이슈 후보.
 
 # VERSION SSOT 동기화
@@ -162,6 +167,8 @@ brew update && brew upgrade fcapture && fcapture --version
 * 명령 이름: brew 설치본 `fcapture`(소문자). case-insensitive APFS 라 개발 머신은 로컬 `~/.bin/fCapture` 가 PATH shadow(사용자 무관).
 
 # 변경 이력 기준
+
+> 개정 (2026-07-20, Issue23): `_doc_arch` ↔ 소스 정합성 감사. 선결 조건 2건이 Issue22 에서 충족되었음을 반영(🚧 마커 제거), 개요의 "외부 설치 경로 없음" 전제를 현재 상태로 갱신, `Formula 설계` 절 헤딩의 구안(source-build) 표기를 실채택(pre-built binary)으로 정정, sha256 placeholder 를 실파일 참조로 대체함. `Bundle.main` 접근부 인용을 라인 번호에서 심볼명 기준으로 전환함.
 
 * 본 문서가 fCapture brew 배포 설계 SSOT. 배포 방식·tap 구조·릴리즈 절차 변경 시 본 문서 직접 갱신.
 * 버전 동기화 메커니즘은 version-manager-m 규칙이 상위 SSOT — 충돌 시 그쪽 우선, 본 문서는 fCapture 적용 사례.

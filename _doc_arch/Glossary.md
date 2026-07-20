@@ -4,6 +4,8 @@ description: fCapture 프로젝트에서 사용하는 핵심 용어 정의
 date: 2026-06-15
 ---
 
+> 개정 (2026-07-20, Issue23): `_doc_arch` ↔ 소스 정합성 감사. alias 표를 CLI(`parseTargetType`)와 JSON decoder(`TargetType.init(from:)`) 두 경로로 분리 기술함 — `region` 은 CLI 전용 alias 이며 설정 파일에서는 동작하지 않음. 버전 하드코딩을 VERSION 파일 참조로 치환하고, 코드측 오기 2건에 🔧 [FIXME] 를 부착함.
+>
 > 개정 (2026-06-15): 코드(`ScreenCaptureApp.swift` TargetType·parseTargetType·captureSingleImage, `Usage.txt`)와 대조하여 target 값 목록을 정정함.
 > 구 표기(`window`/`screen:N`/`region`/`staticRegion`)는 코드 진화 과정에서 canonical 이 `_` 접미 명칭(`window_pointer`/`window_active`/`window_flash`/`region_user`/`region_static`)으로 분화됨(Issue8 이후). 누락되어 있던 `scroll_capture` 모드와 `relay`·`window_flash`·결과 형식 용어를 추가함.
 
@@ -29,14 +31,17 @@ canonical 값은 `_` 접미 명칭이며, 일부 구 표기는 코드에서 alia
 
 ## target alias (코드 인식 호환 표기)
 
-`TargetType.init(from:)` / `parseTargetType` / `captureSingleImage` 가 인식하는 동의어. 신규 작성 시 canonical 사용 권장.
+신규 작성 시 canonical 사용 권장. **alias 인식 범위가 경로에 따라 다르다** — CLI `-t` 인자는 `parseTargetType` 이, JSON/YAML 설정 값은 `TargetType.init(from:)`(decoder) 가 각각 해석하며 둘의 동의어 목록이 같지 않다.
 
-| alias         | canonical 매핑      | 비고                                                |
-| ------------- | ------------------- | --------------------------------------------------- |
-| window        | window_pointer      | bare `window` → `captureSingleImage` 에서 동일 처리 |
-| staticRegion  | region_static       | decoder 가 `.staticRegion` 으로 직접 매핑           |
-| region        | region_user         | bare `region` → 인터랙티브 영역 선택 처리           |
-| scroll        | scroll_capture      | parseTargetType / decoder 동의어                    |
+| alias        | canonical 매핑 | CLI (`parseTargetType`) | JSON decoder (`init(from:)`)          |
+| ------------ | -------------- | :---------------------: | :------------------------------------ |
+| window       | window_pointer | ✅ `.single("window")`  | ✅ `.single("window")`                |
+| staticRegion | region_static  | ✅ `.staticRegion`      | ✅ `.staticRegion`                    |
+| region       | region_user    | ✅ `.region`            | ❌ `.single("region")` 로 떨어짐      |
+| scroll       | scroll_capture | ✅ `.scrollCapture`     | ✅ `.scrollCapture`                   |
+
+* `window` 는 두 경로 모두 `.single(원문)` 으로 전달되고, 최종 분기는 `captureSingleImage` 가 `window_pointer` 와 동일하게 처리한다.
+* ⚠️ **`region` 은 CLI 전용 alias 다.** decoder 의 특수 분기는 `all`·`staticRegion`/`region_static`·`region_user`·`scroll_capture`/`scroll` 뿐이라, JSON 설정에 `"target": "region"` 을 적으면 `.region`(인터랙티브 선택)이 아니라 `.single("region")` 이 된다. 설정 파일에서는 반드시 canonical `region_user` 를 쓸 것.
 
 # 옵션 용어
 
@@ -93,7 +98,11 @@ canonical 값은 `_` 접미 명칭이며, 일부 구 표기는 코드에서 alia
 | -r           | 영역 캡처 (`defaultRegion.json` 사용)         |
 | -f/--fixRegion | 마지막 region 좌표를 `defaultRegion.json` 에 고정 |
 | -h/--help    | 도움말 출력                                   |
-| -v/--version | 버전 출력 (현재 1.0.18)                       |
+| -v/--version | 버전 출력 — 값은 git root [VERSION](../VERSION) 파일이 SSOT (빌드 시 `appVersion` 에 주입) |
+
+* 영역 캡처 프리셋은 **`-r` 단독 형태만** 인식된다(`parseArguments`). `--region` 은 프리셋이 아니라 정적 영역 좌표 옵션(`--region x,y,w,h`)이다.
+    - 🔧 [FIXME] 번들 `Usage.txt` 는 `-r, --region` 을 프리셋으로 병기하고 있어 오기다. 또한 프리셋 분기 `case "-r", "--region":` 의 `"--region"` 은 `parseArguments` 가 그 값을 프리셋으로 넘기지 않으므로 도달 불가(dead branch)다. 코드 변경이므로 별도 이슈 후보.
+    - 🔧 [FIXME] `printHelp` 의 fallback 출력(번들 `Usage.txt` 미탑재 시 사용)은 `--no-flash` 를 기본값이라고 표기하나, 실제 기본은 flash **ON**(`config.windowFlash ?? true`)이다. 번들 `Usage.txt` 쪽 표기가 맞다.
 
 # 용어 변경 이력
 
