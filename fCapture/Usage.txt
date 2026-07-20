@@ -10,7 +10,7 @@ Options (기존):
   -v, --version     버전 출력
   -h, --help        도움말 출력
   -s, --screen      ~/.fCapture/defaultScreen.json으로 스크린 캡처
-  -r, --region      ~/.fCapture/defaultRegion.json으로 영역 캡처
+  -r                ~/.fCapture/defaultRegion.json으로 영역 캡처 (--region 은 좌표 옵션)
   -w, --window      ~/.fCapture/defaultWindow.json으로 윈도우 캡처
   -f, --fixRegion   마지막 region_user 좌표를 defaultRegion.json에 적용
   [config.json]     지정한 JSON 설정 파일로 실행

@@ -798,7 +798,8 @@ struct ScreenCaptureApp {
             switch flag {
             case "-s", "--screen":
                 baseConfig = loadFCaptureConfig(fileName: "defaultScreen")
-            case "-r", "--region":
+            // "--region" 은 좌표 옵션(--region x,y,w,h)이라 presetFlag 로 들어오지 않음. 프리셋은 "-r" 단독
+            case "-r":
                 baseConfig = loadFCaptureConfig(fileName: "defaultRegion")
             case "-w", "--window":
                 baseConfig = loadFCaptureConfig(fileName: "defaultWindow")
@@ -968,6 +969,7 @@ struct ScreenCaptureApp {
             print("  -h, --help                도움말 출력")
             print("  -s, --screen              스크린 전체 캡처 (defaultScreen.json 사용)")
             print("  -w, --window              윈도우 캡처 (defaultWindow.json 사용)")
+            print("  -r                        영역 캡처 (defaultRegion.json 사용, --region 은 좌표 옵션)")
             print("  -f, --fixRegion           마지막 영역 좌표 고정")
             print("")
             print("캡처 대상 옵션 (반복 가능):")
@@ -989,8 +991,8 @@ struct ScreenCaptureApp {
             print("화면 옵션:")
             print("  --shadow                  윈도우 그림자 포함")
             print("  --no-shadow               윈도우 그림자 제외 (기본값)")
-            print("  --flash                   캡처 플래시 피드백 활성화")
-            print("  --no-flash                캡처 플래시 피드백 비활성화 (기본값)")
+            print("  --flash                   캡처 플래시 피드백 활성화 (기본값)")
+            print("  --no-flash                캡처 플래시 피드백 비활성화")
             print("")
             print("영역 옵션:")
             print("  --region <x,y,w,h>       정적 영역 좌표 (region_static 타겟 필수)")
@@ -1790,7 +1792,7 @@ struct ScreenCaptureApp {
         let fileName = (expandedPath as NSString).lastPathComponent
         let baseName = (fileName as NSString).deletingPathExtension       // "t4.basePath"
         let firstPart = baseName.components(separatedBy: ".").first ?? baseName  // "t4"
-        for ext in ["default.yaml", "yaml", "yml"] {
+        for ext in ["default.yaml", "default.yml", "yaml", "yml"] {
             // 1순위: 전체 baseName (t4.basePath.default.yaml)
             let c1 = (dir as NSString).appendingPathComponent("\(baseName).\(ext)")
             if FileManager.default.fileExists(atPath: c1) {

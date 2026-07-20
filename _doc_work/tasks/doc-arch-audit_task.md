@@ -51,9 +51,9 @@ plan: _doc_work/plan/doc-arch-audit_plan.md
 
 # 후속 이슈 후보
 
-본 이슈 범위(문서 교정) 밖이라 코드를 고치지 않고 문서에 🔧 [FIXME] 로 남긴 항목.
+본 이슈 범위(문서 교정) 밖이라 코드를 고치지 않고 문서에 🔧 [FIXME] 로 남긴 항목. **전건 Issue24 에서 해소됨.**
 
-- [ ] `findCompanionYAML` 확장자 목록에 `"default.yml"` 추가 — `.yml` 기본 템플릿 companion fallback 복구
-- [ ] `printHelp` fallback 의 flash 기본값 표기 정정 (`--flash` 가 기본)
-- [ ] 번들 `Usage.txt` 의 `-r, --region` 프리셋 병기 정정
-- [ ] 프리셋 분기 `case "-r", "--region":` 의 dead branch 정리
+- [v] `findCompanionYAML` 확장자 목록에 `"default.yml"` 추가 — `.yml` 기본 템플릿 companion fallback 복구 (Issue24, `ScreenCaptureApp.swift` `findCompanionYAML`)
+- [v] `printHelp` fallback 의 flash 기본값 표기 정정 (`--flash` 가 기본) (Issue24, `ScreenCaptureApp.swift` `printHelp`)
+- [v] 번들 `Usage.txt` 의 `-r, --region` 프리셋 병기 정정 (Issue24, `fCapture/Usage.txt`)
+- [v] 프리셋 분기 `case "-r", "--region":` 의 dead branch 정리 (Issue24, `ScreenCaptureApp.swift`)
