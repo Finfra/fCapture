@@ -45,6 +45,15 @@ plan: _doc_work/plan/doc-arch-audit_plan.md
 
 # T4. 종결
 
-- [ ] Issue.md Issue23 등록 (HWM 22 → 23)
-- [ ] 커밋 (문서 교정 + plan/task)
-- [ ] Issue.md ✅ 완료 이동 + commit hash 기록
+- [v] Issue.md Issue23 등록 (HWM 22 → 23)
+- [v] 커밋 (문서 교정 + plan/task) — `ec1ca7d`
+- [v] Issue.md ✅ 완료 이동 + commit hash 기록 — `Issue.md` 는 `.gitignore` 대상이라 커밋 비포함(로컬 SSOT)
+
+# 후속 이슈 후보
+
+본 이슈 범위(문서 교정) 밖이라 코드를 고치지 않고 문서에 🔧 [FIXME] 로 남긴 항목.
+
+- [ ] `findCompanionYAML` 확장자 목록에 `"default.yml"` 추가 — `.yml` 기본 템플릿 companion fallback 복구
+- [ ] `printHelp` fallback 의 flash 기본값 표기 정정 (`--flash` 가 기본)
+- [ ] 번들 `Usage.txt` 의 `-r, --region` 프리셋 병기 정정
+- [ ] 프리셋 분기 `case "-r", "--region":` 의 dead branch 정리
