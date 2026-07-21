@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/webp;base64,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">
+<title>fCapture — brew 잔여 마커 2건 해소 (Issue25)</title>
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", sans-serif;
+    max-width: 820px; margin: 0 auto; padding: 0 1.2rem 4rem; line-height: 1.7;
+    color: #1c1c1e; background: #fff; }
+  header { position: sticky; top: 0; z-index: 100; display: flex; align-items: center;
+    justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding: 0.9rem 1.4rem;
+    margin-inline: calc(50% - 50vw); background: hsl(212,45%,80%); color: #1a1a1a; }
+  header > .hub-link { flex: 0 0 auto; }
+  header h1 { margin: 0; font-size: 1.15rem; flex: 1 1 auto; min-width: 0; text-align: center; }
+  header .header-actions { display: flex; align-items: center; gap: 0.5rem; flex: 0 0 auto; }
+  header .proj-badge, header .sess-link, header .hub-link, header button { display: inline-flex; align-items: center; line-height: 1; color: #1a1a1a; text-decoration: none;
+    cursor: pointer; white-space: nowrap; background: rgba(0,0,0,0.08);
+    border: 1px solid rgba(0,0,0,0.15); padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.85rem; }
+  header .copy-link, header .close-btn { justify-content: center; padding: 0.2rem 0.5rem; }
+  header .close-btn { margin-left: 0.6rem; }
+  header .close-btn:hover { background: rgba(200,0,0,0.18); }
+  header .proj-badge:hover, header .sess-link:hover, header .hub-link:hover, header button:hover {
+    background: rgba(0,0,0,0.16); text-decoration: underline; }
+  h2 { margin-top: 2.4rem; font-size: 1.28rem; border-bottom: 2px solid #d9dde3; padding-bottom: 0.35rem; }
+  h3 { margin-top: 1.8rem; font-size: 1.05rem; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.92rem; }
+  th, td { border: 1px solid #d9dde3; padding: 0.45rem 0.6rem; text-align: left; vertical-align: top; }
+  th { background: #eef1f5; font-weight: 600; }
+  code { background: #f0f2f5; padding: 0.1rem 0.35rem; border-radius: 4px;
+    font-family: "SF Mono", Menlo, monospace; font-size: 0.88em; }
+  pre { background: #f6f8fa; padding: 0.9rem 1rem; border-radius: 8px; overflow-x: auto; }
+  pre code { background: none; padding: 0; }
+  .scroll-x { overflow-x: auto; }
+  blockquote { margin: 1.2rem 0; padding: 0.6rem 1rem; border-left: 4px solid #7aa3d4;
+    background: #f4f7fb; }
+  .tag { display: inline-block; padding: 0.05rem 0.45rem; border-radius: 4px;
+    font-size: 0.8rem; font-weight: 600; }
+  .fixed { background: #d8f0d8; color: #1c5c1c; }
+  .risk { background: #ffd6d6; color: #7a1c1c; }
+  .new { background: #ffe8cc; color: #7a3e00; }
+  a { color: #0b62c4; }
+  .pass { color: #1c7c1c; font-weight: 600; }
+  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #d9dde3;
+    font-size: 0.85rem; color: #666; }
+  @media (prefers-color-scheme: dark) {
+    body { color: #e4e4e6; background: #1b1c1e; }
+    h2 { border-bottom-color: #3a3d42; }
+    th, td { border-color: #3a3d42; }
+    th { background: #26282c; }
+    code { background: #2a2d31; }
+    pre { background: #24262a; }
+    blockquote { background: #232a33; border-left-color: #4a7ab0; }
+    .fixed { background: #1e4520; color: #b6e6b6; }
+    .risk { background: #5a1e1e; color: #ffc4c4; }
+    .new { background: #5a3a10; color: #ffd9a0; }
+    .pass { color: #7ee07e; }
+    a { color: #6fb2ff; }
+    footer { border-top-color: #3a3d42; color: #999; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <a class="hub-link" href="/hub" target="fpm-hub" title="통합 모니터링 Hub"><img src="data:image/webp;base64,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" alt="Hub" style="height:1.2em;vertical-align:-0.25em;"></a>
+  <h1>brew 잔여 마커 2건 해소 (Issue25)</h1>
+  <nav class="header-actions">
+    <a class="proj-badge" href="#" title="클릭 → VSCode 로 fCapture 열기"
+       onclick="event.preventDefault();fetch('/open-project',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cwd:'/Users/nowage/_git/__all/fCapture'})}).then(function(r){return r.json();}).then(function(j){if(j&&j.error)alert('VSCode 열기 실패: '+j.error);}).catch(function(){alert('hub 서버 미응답 — VSCode 열기 실패');});">📁 fCapture</a>
+    <a class="sess-link" href="#" title="클릭 → 이 문서를 만든 세션 탭으로 포커스"
+       onclick="event.preventDefault();fetch('/open-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cwd:'/Users/nowage/_git/__all/fCapture',sid:'6ed63a45-fe86-4ac9-9ee1-bb0b37c684f3'})}).then(function(r){return r.json();}).then(function(j){if(j&&j.error)alert('세션 열기 실패: '+j.error);}).catch(function(){alert('hub 서버 미응답 — 세션 열기 실패');});">🆚</a>
+    <button type="button" class="copy-link" title="이 문서 링크 복사"
+       onclick="(function(b){var u=location.href.replace(/[?&]_shell=1$/,'');function ok(){var o=b.textContent;b.textContent='✓';setTimeout(function(){b.textContent=o;},1200);}function fb(){try{var ta=document.createElement('textarea');ta.value=u;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();var r=document.execCommand('copy');document.body.removeChild(ta);if(r){ok();}else{window.prompt('문서 링크 복사',u);}}catch(e){window.prompt('문서 링크 복사',u);}}if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(u).then(ok).catch(fb);}else{fb();}})(this)">🔗</button>
+    <button type="button" class="close-btn" title="이 문서 탭 닫기" onclick="window.close()">✕</button>
+  </nav>
+</header>
+<script>(function(){var P='9876';if(location.protocol==='http:'&&location.port===P)return;var B='http://jm4.tail064437.ts.net:'+P;function fix(){var a=document.querySelector('a.hub-link');if(a)a.href=B+'/hub';}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fix);else fix();var _f=window.fetch;window.fetch=function(u,o){if(typeof u==='string'&&u.charAt(0)==='/')u=B+u;return _f.call(this,u,o);};})();</script>
+
+<h2>결론</h2>
+
+<p>지난 응답 끝에 "범위 밖으로 유지"라 남겨 둔 마커 2건이 이번 잔여 작업의 대상이었습니다. 둘 다 해소하여, 이제 fCapture 의 <code>_doc_arch/</code> 전체에 활성 🔧 FIXME·🚧 TODO 마커가 하나도 남지 않았습니다.</p>
+
+<p><a href="vscode://file/Users/nowage/_git/__all/fCapture/Issue.md">Issue.md</a> 에 Issue25 로 등록·종결했습니다 — commit <code>cdef2a7</code>.</p>
+
+<div class="scroll-x">
+<table>
+  <tr><th>이슈</th><th>다룬 것</th><th>이번 세션</th></tr>
+  <tr><td>Issue23</td><td>문서 감사 — 8건 교정·12건 정합·4건 FIXME 보존</td><td>이전</td></tr>
+  <tr><td>Issue24</td><td>보존된 FIXME 코드 결함 4건 해소 (companion·Glossary)</td><td>앞 응답</td></tr>
+  <tr><td><strong>Issue25</strong></td><td><strong>남은 마커 2건 해소 (Bundle 리소스·릴리즈 자동화)</strong></td><td><strong>지금</strong></td></tr>
+</table>
+</div>
+
+<h2>[1] Bundle 리소스 접근 — 안전 헬퍼 도입 <span class="tag fixed">해소</span></h2>
+
+<p>증상은 명확했습니다. Package.swift 가 프리셋 JSON·YAML·<code>Usage.txt</code> 를 <code>.copy()</code> 리소스로 선언하고 있어 SPM 은 이들을 별도 <code>fCapture_fCapture.bundle</code> 로 패키징하는데, 코드는 <code>Bundle.main</code> 으로 접근하고 있었습니다. <code>Bundle.main</code> 은 실행 파일 위치를 메인 번들로 잡을 뿐 옆의 <code>.bundle</code> 안을 보지 않으므로, 리소스를 전부 놓쳤습니다. 실제로 앞선 <code>--help</code> 출력이 번들 <code>Usage.txt</code> 가 아니라 하드코딩 fallback 이었던 것이 그 증거였습니다.</p>
+
+<h3>왜 Bundle.module 단순 치환이 아니었나 <span class="tag risk">crash 리스크</span></h3>
+
+<p>문서의 FIXME 는 "정석은 <code>Bundle.module</code> 로 전환"이라고 적혀 있었지만, 그대로 하면 오히려 배포본을 깨뜨립니다. SPM 이 생성하는 <code>Bundle.module</code> accessor 는 리소스 번들을 찾지 못하면 <code>fatalError</code> 를 냅니다.</p>
+
+<blockquote>
+brew 배포본은 tarball 에 바이너리 하나만 넣습니다(번들 미포함). 그 상태로 <code>Bundle.module</code> 을 처음 접근하는 순간 — 예를 들어 새 사용자가 처음 실행해 <code>~/.fCapture/</code> 템플릿을 만들려는 시점 — 즉시 crash 합니다. FIXME 를 곧이곧대로 따랐다면 brew 사용자 전원이 첫 실행에서 죽는 회귀가 됐을 것입니다.
+</blockquote>
+
+<p>그래서 <code>Bundle.module</code> 을 직접 쓰지 않고, crash 없이 <code>nil</code> 을 반환하는 헬퍼를 만들어 4곳에서 호출하게 했습니다.</p>
+
+<pre><code>private static func bundledResourceURL(_ name: String, withExtension ext: String) -> URL? {
+    if let u = Bundle.main.url(forResource: name, withExtension: ext) { return u }
+    let sibling = Bundle.main.bundleURL.appendingPathComponent("fCapture_fCapture.bundle")
+    if let b = Bundle(url: sibling), let u = b.url(forResource: name, withExtension: ext) {
+        return u
+    }
+    return nil
+}</code></pre>
+
+<p>치환된 소비부는 <code>createBundleYAMLIfNeeded</code>·<code>loadOrCreateDefaultSetting</code>·<code>createBundleFileIfNeeded</code>·<code>printHelp</code> 4곳입니다. 모두 <code>nil</code> 을 이미 graceful 하게 처리하고 있어 배포본은 그대로 안전합니다.</p>
+
+<h3>검증 3종 <span class="pass">전부 통과</span></h3>
+
+<div class="scroll-x">
+<table>
+  <tr><th>축</th><th>방법</th><th>결과</th></tr>
+  <tr><td>로컬 빌드 리소스 인식</td><td><code>--help</code> 출력 확인</td><td>이제 번들 <code>Usage.txt</code> 로딩 (fallback 아님) <span class="pass">✓</span></td></tr>
+  <tr><td>템플릿 자동생성 복구</td><td><code>~/.fCapture/defaultSetting.json</code> 백업 → 실행 → 재생성 로그 확인 → 원본 복원</td><td><code>defaultSetting.json 생성 완료</code> 로그 <span class="pass">✓</span></td></tr>
+  <tr><td>배포본 crash 안전성</td><td>번들 없는 임시 디렉토리에 바이너리만 복사 후 실행</td><td>exit 0, fallback 동작 (<code>Bundle.module</code>였으면 fatalError) <span class="pass">✓</span></td></tr>
+</table>
+</div>
+
+<blockquote>
+두 번째 검증에서 사용자 실데이터인 <code>~/.fCapture/defaultSetting.json</code> 을 건드려야 했습니다. rename 으로 백업하고, 재생성 확인 후 백업본으로 원복했습니다. 재생성된 템플릿이 아니라 원래 파일이 그대로 남도록 복원까지 마쳤고, 테스트로 찍힌 스크린샷 1장도 삭제했습니다.
+</blockquote>
+
+<h2>[2] 릴리즈 자동화 — deploy-brew.sh <span class="tag new">신규</span></h2>
+
+<p>문서의 🚧 TODO 는 릴리즈 절차를 <code>bin/deploy-brew.sh</code> 로 자동화하라는 것이었습니다. 그런데 참조하라던 <code>version-manager-m</code> 의 <code>fsc-deploy-brew.sh</code> 패턴은 실물이 없었고, <code>bin/</code> 은 <code>.gitignore</code> 대상이라 그 경로에 두면 커밋되지 않습니다. 그래서 <code>buildAndTest.sh</code> 와 나란히 루트에 <a href="vscode://file/Users/nowage/_git/__all/fCapture/deploy-brew.sh">deploy-brew.sh</a> 를 두고, 문서의 경로 표기도 바로잡았습니다.</p>
+
+<p>스크립트는 문서의 "릴리즈 절차" 6단계를 그대로 실행합니다.</p>
+
+<pre><code>VERSION 주입 → universal2 빌드(arm64+x86_64) → tarball(ad-hoc 서명)
+→ sha256 → gh release create → 로컬 Formula/fcapture.rb 갱신</code></pre>
+
+<div class="scroll-x">
+<table>
+  <tr><th>플래그</th><th>동작</th></tr>
+  <tr><td>(없음)</td><td>VERSION 파일 버전으로 릴리즈</td></tr>
+  <tr><td><code>--version 1.0.19</code></td><td>버전 갱신(VERSION 파일 기록) 후 릴리즈</td></tr>
+  <tr><td><code>--dry-run</code></td><td>빌드·tarball·sha256 까지만 — <code>gh release</code>·Formula 미변경</td></tr>
+</table>
+</div>
+
+<p>안전장치를 두 개 넣었습니다. 이미 존재하는 릴리즈 태그면 덮어쓰기 사고를 막으려 중단하고, <code>--dry-run</code> 은 Formula 갱신도 생략합니다 — 로컬 재빌드 tarball 의 sha256 은 실제 릴리즈 에셋과 다를 수 있어, 그 해시로 Formula 를 덮으면 기존 릴리즈(<code>v1.0.18</code>)와 불일치하기 때문입니다.</p>
+
+<blockquote>
+초안은 <code>--dry-run</code> 에서도 Formula 를 갱신하도록 짰다가, dry-run 이 기존 릴리즈의 확정 sha256(<code>4fbba5c9…</code>)을 로컬 재빌드 해시로 덮어쓴다는 걸 알아채고 갱신을 실 릴리즈 경로 안으로 옮겼습니다. dry-run 실행 후 <code>git diff Formula/fcapture.rb</code> 가 0 라인임을 확인했습니다.
+</blockquote>
+
+<p><code>--dry-run</code> 전체 파이프라인을 돌려 universal2 바이너리가 x86_64·arm64 2아키텍처로 나오고 sha256 이 산출되는 것까지 확인했습니다. 실제 <code>gh release</code>·tap push 는 버전 변동이 없어 실행하지 않았습니다. tap repo(<code>Finfra/homebrew-tap</code>) push 는 로컬 clone 의존을 없애려 수동 안내 단계로 남겼습니다.</p>
+
+<h2>산출물</h2>
+
+<div class="scroll-x">
+<table>
+  <tr><th>파일</th><th>변경</th></tr>
+  <tr><td><a href="vscode://file/Users/nowage/_git/__all/fCapture/fCapture/ScreenCaptureApp.swift">ScreenCaptureApp.swift</a></td><td><code>bundledResourceURL</code> 헬퍼 추가 + 4곳 치환</td></tr>
+  <tr><td><a href="vscode://file/Users/nowage/_git/__all/fCapture/deploy-brew.sh">deploy-brew.sh</a></td><td>릴리즈 자동화 스크립트 신규</td></tr>
+  <tr><td><a href="vscode://file/Users/nowage/_git/__all/fCapture/_doc_arch/brew-deploy-design.md">brew-deploy-design.md</a></td><td>resources 절·릴리즈 절차·변경 이력 갱신, 마커 2개 제거</td></tr>
+  <tr><td><a href="vscode://file/Users/nowage/_git/__all/fCapture/Issue.md">Issue.md</a></td><td>Issue25 ✅ 완료 (HWM 24 → 25)</td></tr>
+</table>
+</div>
+
+<p>커밋은 <code>cdef2a7</code> 하나입니다. <code>Issue.md</code> 는 Issue22 공개 repo 전환 때 <code>.gitignore</code> 에 등록되어 커밋 대상이 아니므로 로컬 SSOT 로만 기록됩니다.</p>
+
+<footer>fCapture · Issue25 · 2026-07-21 · commit cdef2a7 · _doc_arch 활성 마커 0</footer>
+</body>
+</html>

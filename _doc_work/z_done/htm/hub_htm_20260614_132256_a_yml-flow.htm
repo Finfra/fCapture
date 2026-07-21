@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+<title>fCapture — t4.default_jm4.yml 동작 흐름</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true, theme:'default'});</script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    max-width: 820px; margin: 0 auto; line-height: 1.7; color: #1a1a1a; background: #fff; }
+  main { padding: 1.4rem; }
+  h2 { margin-top: 2rem; border-bottom: 2px solid hsl(212,45%,80%); padding-bottom: 0.3rem; }
+  h3 { margin-top: 1.5rem; }
+  code { background: rgba(0,0,0,0.06); padding: 0.1rem 0.4rem; border-radius: 4px;
+    font-family: "SF Mono", Menlo, monospace; font-size: 0.9em; }
+  pre { background: #1e1e2e; color: #e0e0e0; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+  pre code { background: none; padding: 0; color: inherit; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid rgba(0,0,0,0.15); padding: 0.5rem 0.8rem; text-align: left; vertical-align: top; }
+  th { background: hsl(212,45%,92%); }
+  blockquote { border-left: 4px solid hsl(212,45%,70%); margin: 1rem 0; padding: 0.5rem 1rem;
+    background: rgba(0,0,0,0.03); }
+  .warn { border-left-color: #e65100; background: rgba(230,81,0,0.07); }
+  .mermaid { background: #fff; border-radius: 8px; padding: 1rem; margin: 1rem 0; text-align: center; }
+  header { position: sticky; top: 0; z-index: 100; display: flex; align-items: center;
+    justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding: 0.9rem 1.4rem;
+    background: hsl(212,45%,80%); color: #1a1a1a; }
+  header h1 { margin: 0; font-size: 1.15rem; flex: 1 1 auto; min-width: 0; }
+  header .header-actions { display: flex; align-items: center; gap: 0.5rem; flex: 0 0 auto; }
+  header .proj-badge, header .sess-link, header .hub-link, header button { color: #1a1a1a; text-decoration: none;
+    cursor: pointer; white-space: nowrap; background: rgba(0,0,0,0.08);
+    border: 1px solid rgba(0,0,0,0.15); padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.85rem; }
+  header .proj-badge:hover, header .sess-link:hover, header .hub-link:hover, header button:hover {
+    background: rgba(0,0,0,0.16); text-decoration: underline; }
+  @media (prefers-color-scheme: dark) {
+    body { background: #1a1a1a; color: #e0e0e0; }
+    code { background: rgba(255,255,255,0.1); }
+    th { background: hsl(212,30%,25%); }
+    th, td { border-color: rgba(255,255,255,0.2); }
+    blockquote { background: rgba(255,255,255,0.05); }
+    .mermaid { background: #f5f5f5; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>fCapture — t4.default_jm4.yml 동작 흐름</h1>
+  <nav class="header-actions">
+    <a class="proj-badge" href="#" title="클릭 → VSCode 로 fCapture 열기"
+       onclick="event.preventDefault();fetch('http://127.0.0.1:9876/open-project',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cwd:'/Users/nowage/_git/__all/fCapture'})}).then(function(r){return r.json();}).then(function(j){if(j&&j.error)alert('VSCode 열기 실패: '+j.error);}).catch(function(){alert('hub 서버 미응답 — VSCode 열기 실패');});">📁 fCapture</a>
+    <a class="sess-link" href="#" title="클릭 → 이 문서를 만든 세션 탭으로 포커스"
+       onclick="event.preventDefault();fetch('http://127.0.0.1:9876/open-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cwd:'/Users/nowage/_git/__all/fCapture',sid:'0e3d38a8-0f07-472b-93ad-14f9ef4e37eb'})}).then(function(r){return r.json();}).then(function(j){if(j&&j.error)alert('세션 열기 실패: '+j.error);}).catch(function(){alert('hub 서버 미응답 — 세션 열기 실패');});">🆚 세션</a>
+    <a class="hub-link" href="http://127.0.0.1:9876/hub" target="_blank" title="통합 모니터링 Hub">🎯📊</a>
+    <button type="button" onclick="window.close()">닫기 ✕</button>
+  </nav>
+</header>
+<main>
+
+<h2>핵심 결론</h2>
+<blockquote class="warn">
+<strong>이 YAML 파일은 fCapture에 직접 인자로 줄 수 없습니다.</strong> <code>fCapture t4.default_jm4.yml</code> 로 실행하면 <code>JSON text did not start with array or object</code> 오류로 실패합니다(실측 확인). fCapture의 설정 로더(<code>loadConfig</code>)는 오직 <strong>JSON만</strong> 파싱하기 때문입니다.
+</blockquote>
+<p>YAML은 <strong>companion 참조 메커니즘</strong>을 통해서만 동작합니다. 즉 <strong>JSON 설정 파일이 그 안에서 <code>{경로}</code> 패턴으로 YAML을 참조</strong>하고, fCapture가 디코딩 직전에 그 참조를 YAML 값으로 치환합니다.</p>
+
+<h2>파일 관계</h2>
+<p>IDE에서 연 <code>~/_doc/1.Area/_memo/t4.default_jm4.yml</code> 은 사실 <strong>심볼릭 링크</strong>이며, 실제 파일은 <code>~/.fCapture/jm4/t4.default.yml</code> 입니다. 이 YAML 한 개가 jm4 머신의 캡처 설정 값(SSOT)을 보유하고, 여러 JSON 래퍼(Screen / Window / Region / Scroll)가 모두 같은 YAML을 참조합니다.</p>
+
+<table>
+  <thead><tr><th>파일</th><th>역할</th></tr></thead>
+  <tbody>
+    <tr><td><code>_memo/t4.default_jm4.yml</code></td><td>편집 편의용 심볼릭 링크 → 아래 실제 파일</td></tr>
+    <tr><td><code>~/.fCapture/jm4/t4.default.yml</code></td><td><strong>실제 값 저장소</strong> (capturePath, target, fileFormat, flash, shadow 등)</td></tr>
+    <tr><td><code>~/.fCapture/jm4/jm4_Screen.json</code></td><td>화면 캡처 진입 JSON — 모든 필드를 <code>{...t4.default.yml}</code> 로 참조</td></tr>
+    <tr><td><code>jm4_Window / Region / Scroll.json</code></td><td>같은 YAML 참조, target 종류만 다른 래퍼</td></tr>
+  </tbody>
+</table>
+
+<h3>실제 YAML 내용</h3>
+<pre><code>capturePath: 0
+capturePathArray:
+  - "~/Desktop"
+  - "~/Desktop/tmp"
+  - "/Users/nowage/GoogleDrive_finfra/2026x"
+target:
+  name: "screen"
+  number: 1
+fileFormat: "%d_%T_%target"
+"window_flash": true
+"shadow": false</code></pre>
+
+<h3>이 YAML을 참조하는 JSON (jm4_Screen.json)</h3>
+<pre><code>{
+    "target": "screen:{~/.fCapture/jm4/t4.default.yml}",
+    "capturePath": "{~/.fCapture/jm4/t4.default.yml}",
+    "capturePathArray": "{~/.fCapture/jm4/t4.default.yml}",
+    "fileFormat": "{~/.fCapture/jm4/t4.default.yml}",
+    "window_flash": "{~/.fCapture/jm4/t4.default.yml}",
+    "shadow": "{~/.fCapture/jm4/t4.default.yml}"
+}</code></pre>
+
+<h2>전체 동작 흐름</h2>
+<p>올바른 실행 명령은 <strong>JSON을 인자로</strong> 주는 것입니다 (예: <code>fCapture ~/.fCapture/jm4/jm4_Screen.json</code>).</p>
+
+<div class="mermaid">
+flowchart TD
+    A["fCapture ~/.fCapture/jm4/jm4_Screen.json"] --> B["parseArguments()<br/>비옵션 인자 → configFile 판정"]
+    B --> C["loadConfig(path)<br/>JSONSerialization 으로 JSON → dict"]
+    C --> D["resolveRawConfigReferences(&dict)<br/>각 필드의 {경로} 패턴 탐지"]
+    D --> E["findCompanionYAML()<br/>참조 경로의 실제 yml 파일 해석"]
+    E --> F["parseSimpleYAML / parseYAMLArrays<br/>해당 필드 값 추출"]
+    F --> G["dict 값 치환<br/>screen:{ref}→screen:1, capturePath→0,<br/>array→경로목록, flash→true ..."]
+    G --> H["치환된 dict → JSON → JSONDecoder<br/>→ ScreenCaptureConfig"]
+    H --> I["capturePath=0 → capturePathArray[0]<br/>= ~/Desktop 저장 경로 확정"]
+    I --> J["mergeConfig(CLI 오버라이드 적용)<br/>예: --relay, -p, -t ..."]
+    J --> K["performCapture(config)<br/>screen:1 캡처 → ~/Desktop 저장"]
+</div>
+
+<h2>필드별 치환 결과</h2>
+<table>
+  <thead><tr><th>JSON 원본</th><th>YAML 참조 값</th><th>최종 치환</th></tr></thead>
+  <tbody>
+    <tr><td><code>"screen:{...yml}"</code></td><td>target.name=screen, number=1</td><td><code>"screen:1"</code> (number=-1이면 <code>all</code>)</td></tr>
+    <tr><td><code>capturePath "{...yml}"</code></td><td>capturePath: 0</td><td><code>0</code> (Int → 배열 인덱스)</td></tr>
+    <tr><td><code>capturePathArray "{...yml}"</code></td><td>리스트 3개</td><td><code>["~/Desktop", …]</code></td></tr>
+    <tr><td><code>fileFormat "{...yml}"</code></td><td>"%d_%T_%target"</td><td>그대로</td></tr>
+    <tr><td><code>window_flash "{...yml}"</code></td><td>true</td><td><code>true</code> (Bool)</td></tr>
+    <tr><td><code>shadow "{...yml}"</code></td><td>false</td><td><code>false</code> (Bool)</td></tr>
+  </tbody>
+</table>
+<p><code>capturePath: 0</code> 은 <code>capturePathArray</code> 의 <strong>인덱스 0</strong>(= <code>~/Desktop</code>)을 가리킵니다. 인덱스를 1로 바꾸면 <code>~/Desktop/tmp</code>, 2면 GoogleDrive 경로로 저장됩니다.</p>
+
+<h2>companion 파일명 탐색 규칙</h2>
+<p><code>findCompanionYAML</code> 은 참조 경로가 존재하지 않을 때 형제 파일을 자동 탐색합니다. 우선순위는 <code>{baseName}.default.yaml → {baseName}.yaml → {baseName}.yml</code>, 그다음 첫 컴포넌트만 사용한 <code>{firstPart}.default.yaml …</code> 순입니다. 덕분에 <code>t4.basePath.txt</code> 같은 placeholder가 <code>t4.default.yml</code> 로 자동 연결될 수 있습니다.</p>
+
+<h2>요약</h2>
+<ul>
+  <li>YAML은 <strong>값의 단일 출처(SSOT)</strong> — 직접 실행 대상이 아님</li>
+  <li>실행은 <strong>JSON 래퍼</strong>로: <code>fCapture ~/.fCapture/jm4/jm4_Screen.json</code></li>
+  <li>JSON 내부 <code>{경로}</code> → 디코딩 직전 YAML 값으로 치환 (<code>resolveRawConfigReferences</code>)</li>
+  <li>같은 YAML을 Screen/Window/Region/Scroll JSON이 공유, target 종류만 다름</li>
+</ul>
+
+</main>
+</body>
+</html>
