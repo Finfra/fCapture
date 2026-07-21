@@ -109,9 +109,11 @@ end
 
 * **바이너리 release asset**: tarball 안에 universal2 `fcapture` 바이너리 1개. `bin.install "fcapture"` 만. Xcode 의존·`--disable-sandbox` 불요(빌드 안 함).
 * **명령 이름 소문자 `fcapture`**: brew 관례. macOS case-insensitive APFS 에서 로컬 `~/.bin/fCapture` 와 동일 경로 취급 → 개발 머신은 로컬 배포본이 PATH shadow. 최종 사용자(로컬 배포본 없음)는 영향 없음.
-* **resources**: `.build/release/fCapture_fCapture.bundle` 이 분리 생성되나 코드가 `Bundle.main` 을 사용해 → **미인식**. 바이너리만 배포해도 캡처 동작 무지장(모든 접근부 graceful fallback). 누락 영향은 `~/.fCapture/` 템플릿 자동생성(편의 기능) 스킵뿐 → tarball 에 bundle 미포함.
-    - `Bundle.main` 접근부는 [`ScreenCaptureApp.swift`](../fCapture/ScreenCaptureApp.swift) 의 `createBundleYAMLIfNeeded`(yml 템플릿)·`loadOrCreateDefaultSetting`(defaultSetting.json)·`createBundleFileIfNeeded`(프리셋 json)·`printHelp`(Usage.txt) 4곳. 심볼명 기준으로 찾을 것 — 라인 번호는 코드 변경에 따라 밀린다.
-    - 🔧 [FIXME] 정석은 코드를 `Bundle.module` 로 전환. 현 fallback 의존은 기능상 OK 이나 템플릿 자동생성 무동작 → 별도 이슈 후보.
+* **resources**: `.build/release/fCapture_fCapture.bundle` 이 분리 생성된다. 리소스 접근은 [`ScreenCaptureApp.swift`](../fCapture/ScreenCaptureApp.swift) 의 `bundledResourceURL` 헬퍼가 담당한다 — `Bundle.main` → 실행 파일 옆 SPM 리소스 번들 순으로 탐색하고, 둘 다 없으면 `nil` 을 반환한다.
+    - **로컬 빌드**: SPM 번들이 실행 파일 옆에 있어 헬퍼가 찾음 → `~/.fCapture/` 템플릿 자동생성·번들 `Usage.txt` 도움말이 정상 동작.
+    - **brew 바이너리-only 배포**: tarball 에 bundle 미포함 → 헬퍼가 `nil` 반환 → 모든 호출부가 graceful fallback(템플릿 자동생성 스킵, 하드코딩 도움말). crash 없음.
+    - 헬퍼 소비부 4곳: `createBundleYAMLIfNeeded`(yml 템플릿)·`loadOrCreateDefaultSetting`(defaultSetting.json)·`createBundleFileIfNeeded`(프리셋 json)·`printHelp`(Usage.txt). 심볼명 기준으로 찾을 것 — 라인 번호는 코드 변경에 따라 밀린다.
+    - **`Bundle.module` 을 직접 쓰지 않는 이유**: SPM 이 생성하는 `Bundle.module` 은 리소스 번들 부재 시 `fatalError` 를 낸다. brew 바이너리-only 배포본(번들 없음)에서 첫 리소스 접근이 곧 crash 가 되므로, crash 없이 `nil` 을 반환하는 `bundledResourceURL` 헬퍼로 대체했다(Issue25).
 
 # VERSION SSOT 동기화
 
@@ -150,7 +152,15 @@ gh release create v1.0.19 fCapture-1.0.19.tar.gz --repo Finfra/fCapture --title 
 brew update && brew upgrade fcapture && fcapture --version
 ```
 
-🚧 [TODO] 위 흐름을 `bin/deploy-brew.sh`(또는 `/deploy brew` 커맨드)로 자동화. version-manager-m 의 `fsc-deploy-brew.sh` 패턴 참조.
+위 흐름은 루트 [`deploy-brew.sh`](../deploy-brew.sh) 로 자동화되어 있다(Issue25). `bin/` 은 `.gitignore` 대상이라 루트에 배치했다(문서 초판의 `bin/deploy-brew.sh` 경로는 폐기).
+
+```bash
+./deploy-brew.sh                  # VERSION 파일 버전으로 릴리즈
+./deploy-brew.sh --version 1.0.19 # 버전 갱신 후 릴리즈 (VERSION 파일에 기록)
+./deploy-brew.sh --dry-run        # 빌드·tarball·sha256 까지만 (gh release·Formula 미변경)
+```
+
+스크립트는 VERSION 주입 → universal2 빌드 → tarball(ad-hoc 서명) → sha256 → `gh release create` → 로컬 `Formula/fcapture.rb` 갱신까지 수행한다. 이미 존재하는 릴리즈 태그는 덮어쓰기 사고 방지를 위해 중단한다. tap repo(`Finfra/homebrew-tap`) push 는 로컬 clone 의존을 없애기 위해 수동 단계로 안내만 한다.
 
 # 향후 확장
 
@@ -168,6 +178,8 @@ brew update && brew upgrade fcapture && fcapture --version
 
 # 변경 이력 기준
 
+> 개정 (2026-07-21, Issue25): 잔여 마커 2건 해소. (1) 🔧 [FIXME] 리소스 접근을 `bundledResourceURL` 안전 헬퍼로 전환 — `Bundle.main` 미인식 문제를 SPM 번들 탐색으로 해소하되, `Bundle.module` 직접 접근의 배포본 crash 를 피함. resources 절 서술을 헬퍼 기준으로 갱신. (2) 🚧 [TODO] 릴리즈 절차를 루트 `deploy-brew.sh` 로 자동화(`bin/` gitignore 로 경로 정정).
+>
 > 개정 (2026-07-20, Issue23): `_doc_arch` ↔ 소스 정합성 감사. 선결 조건 2건이 Issue22 에서 충족되었음을 반영(🚧 마커 제거), 개요의 "외부 설치 경로 없음" 전제를 현재 상태로 갱신, `Formula 설계` 절 헤딩의 구안(source-build) 표기를 실채택(pre-built binary)으로 정정, sha256 placeholder 를 실파일 참조로 대체함. `Bundle.main` 접근부 인용을 라인 번호에서 심볼명 기준으로 전환함.
 
 * 본 문서가 fCapture brew 배포 설계 SSOT. 배포 방식·tap 구조·릴리즈 절차 변경 시 본 문서 직접 갱신.

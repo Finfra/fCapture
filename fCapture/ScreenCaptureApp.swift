@@ -851,12 +851,27 @@ struct ScreenCaptureApp {
         createBundleYAMLIfNeeded(fileName: "default", fCaptureDir: fCaptureDir)
     }
 
+    /// 번들 리소스 URL 탐색. `Bundle.main` → 실행 파일 옆 SPM 리소스 번들 순으로 찾는다.
+    /// SPM `.copy` 리소스는 별도 `fCapture_fCapture.bundle` 로 패키징되어 `Bundle.main` 만으로는
+    /// 찾지 못한다(Package.swift resources 선언과 코드 접근 경로 불일치). brew 바이너리-only
+    /// 배포(번들 미포함)에서는 둘 다 실패해 nil 을 반환하며, 모든 호출부가 nil 을 graceful 하게
+    /// 처리한다(crash 없음). `Bundle.module` 직접 접근은 리소스 번들 부재 시 fatalError 이므로
+    /// 배포본 crash 를 피하려 사용하지 않는다.
+    private static func bundledResourceURL(_ name: String, withExtension ext: String) -> URL? {
+        if let u = Bundle.main.url(forResource: name, withExtension: ext) { return u }
+        let sibling = Bundle.main.bundleURL.appendingPathComponent("fCapture_fCapture.bundle")
+        if let b = Bundle(url: sibling), let u = b.url(forResource: name, withExtension: ext) {
+            return u
+        }
+        return nil
+    }
+
     /// 번들 YAML 파일을 ~/.fCapture/ 에 복사. 이미 존재하면 스킵.
     private static func createBundleYAMLIfNeeded(fileName: String, fCaptureDir: URL) {
         let destFile = fCaptureDir.appendingPathComponent("\(fileName).yml")
         guard !FileManager.default.fileExists(atPath: destFile.path) else { return }
         logI("~/.fCapture/\(fileName).yml 이 없어 기본 템플릿으로 생성합니다")
-        guard let templateURL = Bundle.main.url(forResource: fileName, withExtension: "yml") else {
+        guard let templateURL = bundledResourceURL(fileName, withExtension: "yml") else {
             logE("번들에서 \(fileName).yml 템플릿을 찾을 수 없습니다")
             return
         }
@@ -885,7 +900,7 @@ struct ScreenCaptureApp {
 
         // 파일 없으면 번들 템플릿으로 생성
         logI("~/.fCapture/defaultSetting.json 이 없어 기본 템플릿으로 생성합니다")
-        guard let templateURL = Bundle.main.url(forResource: "defaultSetting", withExtension: "json") else {
+        guard let templateURL = bundledResourceURL("defaultSetting", withExtension: "json") else {
             logE("번들에서 defaultSetting.json 템플릿을 찾을 수 없습니다")
             return .defaultConfig
         }
@@ -920,7 +935,7 @@ struct ScreenCaptureApp {
         guard !FileManager.default.fileExists(atPath: destFile.path) else { return }
 
         logI("~/.fCapture/\(fileName).json 이 없어 기본 템플릿으로 생성합니다")
-        guard let templateURL = Bundle.main.url(forResource: fileName, withExtension: "json") else {
+        guard let templateURL = bundledResourceURL(fileName, withExtension: "json") else {
             logE("번들에서 \(fileName).json 템플릿을 찾을 수 없습니다")
             return
         }
@@ -958,7 +973,7 @@ struct ScreenCaptureApp {
     }
 
     static func printHelp() {
-        if let url = Bundle.main.url(forResource: "Usage", withExtension: "txt"),
+        if let url = bundledResourceURL("Usage", withExtension: "txt"),
            let content = try? String(contentsOf: url, encoding: .utf8) {
             print(content)
         } else {
