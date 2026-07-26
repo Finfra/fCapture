@@ -13,3 +13,11 @@ cache/
 tmp/
 _doc_work/
 # _doc_arch/ · Issue.md 는 포함 유지 (설계 SSOT — 제외 금지)
+**/logs/
+**/z_old/
+**/z_backup/
+**/z_past/
+**/_doc_work/
+**/scrap/
+**/cache/
+**/tmp/
