@@ -58,7 +58,7 @@ fCapture 를 `brew install finfra/tap/fcapture` 단일 명령으로 설치 가�
 
 * `brew tap finfra/tap && brew install finfra/tap/fcapture`
 * `fcapture --version` → `1.0.18` 일치, 기본 캡처 동작 확인
-* report 작성(`_doc_work/report/brew-deploy_issue22_report.md`)
+* report 작성(`_doc_work/z_done/report/brew-deploy_issue22_report.md`)
 * Issue22 종결 (commit hash 기록)
 
 # 완료 조건

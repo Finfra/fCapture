@@ -3,7 +3,7 @@ name: brew-deploy_task
 description: fCapture Homebrew 배포 실행 태스크 체크리스트
 date: 2026-06-24
 issue: Issue22
-plan: _doc_work/plan/brew-deploy_plan.md
+plan: _doc_work/z_done/plan/brew-deploy_plan.md
 ---
 
 # 개요

@@ -65,6 +65,6 @@ prj51 fCapture `_doc_arch/` 2개 문서를 Swift 소스(`fCapture/*.swift`)와 �
 
 * `_doc_arch/Glossary.md` (전면 재작성)
 * `_doc_arch/yaml-companion-config.md` (frontmatter date + 개정 note + 번들 템플릿 보강)
-* `_doc_work/report/doc-arch-sync_report.md` (본 리포트, 신규)
+* `_doc_work/z_done/report/doc-arch-sync_report.md` (본 리포트, 신규)
 
 (커밋 없음 — 작업 제약)

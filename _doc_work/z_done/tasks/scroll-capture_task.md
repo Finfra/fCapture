@@ -3,7 +3,7 @@ name: scroll-capture_task
 description: 스크롤 캡처 구현 작업 태스크 (Issue17 + 스크롤 영역 기반 확장)
 date: 2026-04-16
 issue: Issue17
-plan: _doc_work/plan/scroll-capture_plan.md
+plan: _doc_work/z_done/plan/scroll-capture_plan.md
 ---
 
 # 스크롤 캡처 구현 Task
@@ -126,7 +126,7 @@ plan: _doc_work/plan/scroll-capture_plan.md
 # 스크롤 영역 기반 캡처 (AX 단일 모듈)
 
 > Design doc: `~/.gstack/projects/fCapture/nowage-main-design-20260416-172654.md` (APPROVED)
-> Plan: `_doc_work/plan/scroll-region-capture_plan.md`
+> Plan: `_doc_work/z_done/plan/scroll-region-capture_plan.md`
 
 # Task 11: AX 속성 가용성 사전 검증 스파이크 (Step 0)
 

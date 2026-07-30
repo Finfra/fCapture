@@ -3,7 +3,7 @@ name: scroll-capture_plan
 description: fCapture 스크롤 캡처 기능 구현 계획
 date: 2026-04-16
 issue: Issue17
-task: _doc_work/tasks/scroll-capture_task.md
+task: _doc_work/z_done/tasks/scroll-capture_task.md
 
 ---
 

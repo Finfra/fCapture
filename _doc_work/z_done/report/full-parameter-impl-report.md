@@ -6,7 +6,7 @@ date: 2026-03-28
 
 # 개요
 
-* **계획 문서**: `_doc_work/plan/full-parameter-plan.md`
+* **계획 문서**: `_doc_work/z_done/plan/full-parameter-plan.md`
 * **관련 이슈**: Issue11 (구현), Issue12~14 (QA 후속 수정)
 * **구현 기간**: 2026-03-28
 * **최종 커밋**: `5bbc09c`

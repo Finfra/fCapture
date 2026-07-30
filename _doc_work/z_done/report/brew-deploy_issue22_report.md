@@ -3,7 +3,7 @@ name: brew-deploy_issue22_report
 description: Issue22 Homebrew 배포 완료 리포트 — 결과·검증 증거·설계 변경·후속
 date: 2026-06-24
 issue: Issue22
-plan: _doc_work/plan/brew-deploy_plan.md
+plan: _doc_work/z_done/plan/brew-deploy_plan.md
 ---
 
 # 개요
@@ -52,5 +52,5 @@ fCapture 를 `brew install finfra/tap/fcapture` 로 설치 가능하게 함. Git
 # 관련 자료
 
 * 설계 SSOT: `_doc_arch/brew-deploy-design.md`
-* plan: `_doc_work/plan/brew-deploy_plan.md`
-* task: `_doc_work/tasks/brew-deploy_task.md`
+* plan: `_doc_work/z_done/plan/brew-deploy_plan.md`
+* task: `_doc_work/z_done/tasks/brew-deploy_task.md`

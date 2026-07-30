@@ -3,7 +3,7 @@ name: doc-arch-audit_task
 description: _doc_arch ↔ 소스코드 정합성 감사 실행 태스크 — 문서 3종 대조·교정·재검증
 date: 2026-07-20
 issue: Issue23
-plan: _doc_work/plan/doc-arch-audit_plan.md
+plan: _doc_work/z_done/plan/doc-arch-audit_plan.md
 ---
 
 # 진행 규약
