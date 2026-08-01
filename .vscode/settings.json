@@ -2,7 +2,7 @@
   "window.title": "📸 ${rootName}${separator}${activeEditorShort}",
   "workbench.colorCustomizations": {
     "activityBar.activeBackground": "#f5f7fa",
-    "activityBar.background": "#d1ddeb",
+    "activityBar.background": "#f5f7fa",
     "editorError.foreground": "#00000000",
     "editorGroup.border": "#f5f7fa",
     "editorInfo.foreground": "#00000000",
@@ -15,7 +15,7 @@
     "statusBar.debuggingBackground": "#ebdfd1",
     "statusBar.debuggingBorder": "#ebdfd1",
     "statusBarItem.hoverBackground": "#adc3dc",
-    "statusBarItem.remoteBackground": "#d1ddeb",
+    "statusBarItem.remoteBackground": "#c57a9c",
     "tab.activeBorder": "#f5f7fa",
     "titleBar.activeBackground": "#d1ddeb",
     "titleBar.border": "#d1ddeb",
