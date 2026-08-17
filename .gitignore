@@ -120,3 +120,7 @@ Issue_map.htm
 
 # graphify 산출물 — 재생성 가능, 커밋 루프 방지 (Issue296)
 graphify-out/
+
+# prj3#Issue422 — hub 렌더 산출물(log성). SSOT 는 _doc_arch/ · _doc_work/ md
+_doc_work/htm/
+_doc_work/z_done/htm/
