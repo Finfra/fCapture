@@ -2,6 +2,17 @@
 title: fCapture CLAUDE.md
 description: Claude Code가 fCapture 프로젝트에서 작업할 때 참고하는 가이드
 date: 2026-04-04
+
+# ── L1 아이덴티티 (Issue472) ──────────────────────────────────────────
+# 스키마 정본: prj6 ~/_git/___architect/_doc_arch/project-identity-scheme.md
+# ⚠️ 빈 필드는 추측으로 채우지 말 것 — 틀린 값은 빈 값보다 나쁘다
+prj: 51
+identity: macOS 화면·디스플레이·윈도우·영역을 JSON 설정으로 자동 캡처하는 Swift CLI
+not: 이미지 편집 도구가 아니다 — 찍는 것까지가 범위이고 가공은 소비처의 몫이다
+goal_parent:
+lifetime: perpetual
+outcome: fApp UI 캡처 파이프라인(prj11~16)이 이 도구 하나로 도는가
+status: active
 ---
 
 글로벌 규칙(언어, 스타일, 네이밍 등)은 `~/.claude/CLAUDE.md` 참조.
