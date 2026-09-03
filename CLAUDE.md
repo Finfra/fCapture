@@ -9,7 +9,7 @@ date: 2026-04-04
 prj: 51
 identity: macOS 화면·디스플레이·윈도우·영역을 JSON 설정으로 자동 캡처하는 Swift CLI
 not: 이미지 편집 도구가 아니다 — 찍는 것까지가 범위이고 가공은 소비처의 몫이다
-goal_parent:
+goal_parent: 보조 도구
 lifetime: perpetual
 outcome: fApp UI 캡처 파이프라인(prj11~16)이 이 도구 하나로 도는가
 status: active
