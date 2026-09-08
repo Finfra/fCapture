@@ -1,10 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
   <!-- finfra 제품 아이콘 — fCapture (macOS 스크린 캡처 CLI)
-       배치·색상은 www2/product/fpm/app-icon.png 실측값을 따른다.
-         F 세로획 기울기 -0.084 · 중괄호 대칭축 x=553 · 워드마크 x 335~712 · 여우 x 825~989
-       고유 글리프: 네 모서리 크롭 마크 + 점선 선택 사각형 + 중앙 카메라 (캡처)
-       ⚠️ 노란 번개는 쓰지 않는다 — prj15 fSnippet·fSnippetCli 아이콘의 지배 요소라
-          같은 액센트를 쓰면 그 계열의 세 번째 변종으로 읽힌다(2026-09-09 사용자 지시) -->
+       구성: 좌측 Γ 형 F 마크 + 네 모서리 크롭 마크 + 큰 카메라 + infra 워드마크 + 우하단 고양이
+       ⚠️ 노란 번개 금지 — prj15 fSnippet·fSnippetCli 의 지배 요소라 같은 액센트를 쓰면
+          그 계열의 세 번째 변종으로 읽힌다 (2026-09-09 사용자 지시)
+       ⚠️ 중괄호 {} · 점선 선택 사각형 제거 — 카메라를 키우기 위해 (2026-09-09 사용자 지시)
+       동물은 **고양이**다. 여우가 아니다 — 눈 2개·검은 코·수염이 보여야 한다.
+       원본은 fBanner/app-icon.png 에서 추출(배경이 가장 깨끗) → cat-element.png -->
   <defs>
     <linearGradient id="fmark" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0"    stop-color="#7a5980"/>
@@ -23,44 +24,27 @@
   <path d="M 219 118 L 864 118 L 855 208 L 305 208 L 244 916 L 155 916 Z"
         fill="url(#fmark)" stroke="url(#fmark)" stroke-width="10" stroke-linejoin="round"/>
 
-  <!-- 중앙 연보라 중괄호 -->
-  <g fill="none" stroke="#b391b4" stroke-width="36" stroke-linecap="round">
-    <path d="M 378 258 C 344 258 338 274 338 302 L 338 428
-             C 338 454 320 466 300 470
-             C 320 474 338 486 338 512 L 338 678
-             C 338 706 344 722 378 722"/>
-    <path d="M 728 258 C 762 258 768 274 768 302 L 768 428
-             C 768 454 786 466 806 470
-             C 786 474 768 486 768 512 L 768 678
-             C 768 706 762 722 728 722"/>
+  <!-- 네 모서리 크롭 마크 — 캡처 영역을 지시하는 프레임 -->
+  <g fill="none" stroke="#482948" stroke-width="26" stroke-linecap="square">
+    <path d="M 336 380 L 336 290 L 426 290"/>
+    <path d="M 724 290 L 814 290 L 814 380"/>
+    <path d="M 336 630 L 336 720 L 426 720"/>
+    <path d="M 724 720 L 814 720 L 814 630"/>
   </g>
 
-  <!-- 고유 글리프 ① 네 모서리 크롭 마크 (바깥 프레임) -->
-  <g fill="none" stroke="#482948" stroke-width="20" stroke-linecap="square">
-    <path d="M 396 348 L 396 286 L 458 286"/>
-    <path d="M 648 286 L 710 286 L 710 348"/>
-    <path d="M 396 632 L 396 694 L 458 694"/>
-    <path d="M 648 694 L 710 694 L 710 632"/>
-  </g>
-
-  <!-- 고유 글리프 ② 점선 선택 사각형 (크롭 마크 안쪽) -->
-  <rect x="436" y="326" width="234" height="328" rx="6"
-        fill="none" stroke="#482948" stroke-width="16"
-        stroke-dasharray="32 22"/>
-
-  <!-- 고유 글리프 ③ 카메라 (선택 영역 안 = 그 영역을 찍는다) -->
+  <!-- 카메라 (주 글리프) -->
   <g>
     <!-- 뷰파인더 돌출부 -->
-    <rect x="491" y="418" width="62" height="28" rx="9" fill="url(#body)"/>
+    <rect x="452" y="352" width="128" height="54" rx="17" fill="url(#body)"/>
     <!-- 바디 -->
-    <rect x="461" y="440" width="184" height="128" rx="20" fill="url(#body)"/>
+    <rect x="400" y="398" width="350" height="262" rx="42" fill="url(#body)"/>
     <!-- 렌즈 -->
-    <circle cx="553" cy="504" r="44" fill="#ffffff"/>
-    <circle cx="553" cy="504" r="30" fill="#8f6b92"/>
-    <circle cx="553" cy="504" r="15" fill="#2e1730"/>
-    <circle cx="542" cy="493" r="6"  fill="#ffffff" opacity="0.85"/>
-    <!-- 셔터 액센트 (번개를 대신하는 따뜻한 색 단서) -->
-    <circle cx="614" cy="466" r="12" fill="#e8b64a"/>
+    <circle cx="575" cy="530" r="92" fill="#ffffff"/>
+    <circle cx="575" cy="530" r="65" fill="#8f6b92"/>
+    <circle cx="575" cy="530" r="32" fill="#2e1730"/>
+    <circle cx="551" cy="506" r="13" fill="#ffffff" opacity="0.9"/>
+    <!-- 셔터 액센트 -->
+    <circle cx="697" cy="452" r="25" fill="#e8b64a"/>
   </g>
 
   <!-- 하단 infra 워드마크 -->
