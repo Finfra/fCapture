@@ -1,0 +1,26 @@
+{
+  "name": "fcapture",
+  "version": "1.0.0",
+  "description": "Capture macOS screens, windows and regions via the fCapture CLI",
+  "author": {
+    "name": "nowage",
+    "url": "https://github.com/nowage"
+  },
+  "repository": "https://github.com/Finfra/f-claude-plugins",
+  "license": "MIT",
+  "keywords": [
+    "screenshot",
+    "capture",
+    "screen",
+    "window",
+    "region",
+    "macos",
+    "cli"
+  ],
+  "mcpServers": {
+    "fcapture": {
+      "command": "node",
+      "args": ["/Users/nowage/_git/__all/f-claude-plugins/fCapture/mcp-server.js"]
+    }
+  }
+}
