@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- finfra 제품 아이콘 — fCapture (macOS 스크린 캡처 CLI)
+       배치·색상은 www2/product/fpm/app-icon.png 실측값을 따른다.
+         F 세로획 기울기 -0.084 · 중괄호 대칭축 x=553 · 워드마크 x 335~712 · 여우 x 825~989
+       고유 글리프: 네 모서리 크롭 마크 + 점선 선택 사각형 (캡처 영역 지정) -->
+  <defs>
+    <linearGradient id="fmark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0"    stop-color="#7a5980"/>
+      <stop offset="0.35" stop-color="#664364"/>
+      <stop offset="1"    stop-color="#3f2140"/>
+    </linearGradient>
+    <linearGradient id="bolt" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f2cf72"/>
+      <stop offset="1" stop-color="#d99f36"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1024" height="1024" fill="#ffffff"/>
+
+  <!-- 좌측 Γ 형 F 마크 -->
+  <path d="M 219 118 L 864 118 L 855 208 L 305 208 L 244 916 L 155 916 Z"
+        fill="url(#fmark)" stroke="url(#fmark)" stroke-width="10" stroke-linejoin="round"/>
+
+  <!-- 중앙 연보라 중괄호 -->
+  <g fill="none" stroke="#b391b4" stroke-width="36" stroke-linecap="round">
+    <path d="M 378 258 C 344 258 338 274 338 302 L 338 428
+             C 338 454 320 466 300 470
+             C 320 474 338 486 338 512 L 338 678
+             C 338 706 344 722 378 722"/>
+    <path d="M 728 258 C 762 258 768 274 768 302 L 768 428
+             C 768 454 786 466 806 470
+             C 786 474 768 486 768 512 L 768 678
+             C 768 706 762 722 728 722"/>
+  </g>
+
+  <!-- 고유 글리프 ① 네 모서리 크롭 마크 (바깥 프레임) -->
+  <g fill="none" stroke="#482948" stroke-width="20" stroke-linecap="square">
+    <path d="M 396 348 L 396 286 L 458 286"/>
+    <path d="M 648 286 L 710 286 L 710 348"/>
+    <path d="M 396 632 L 396 694 L 458 694"/>
+    <path d="M 648 694 L 710 694 L 710 632"/>
+  </g>
+
+  <!-- 고유 글리프 ② 점선 선택 사각형 (크롭 마크 안쪽) -->
+  <rect x="436" y="326" width="234" height="328" rx="6"
+        fill="none" stroke="#482948" stroke-width="16"
+        stroke-dasharray="32 22"/>
+
+  <!-- 노란 번개 액센트 -->
+  <path d="M 590 255 L 512 370 L 552 370 L 522 432 L 604 322 L 562 322 Z"
+        fill="url(#bolt)" stroke="#b98524" stroke-width="7" stroke-linejoin="round"/>
+
+  <!-- 하단 infra 워드마크 -->
+  <text x="328" y="918" font-family="Helvetica, Arial, sans-serif" font-size="224"
+        font-weight="700" letter-spacing="-6" fill="#3c1b39">infra</text>
+</svg>
