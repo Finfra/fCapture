@@ -2,16 +2,18 @@
   <!-- finfra 제품 아이콘 — fCapture (macOS 스크린 캡처 CLI)
        배치·색상은 www2/product/fpm/app-icon.png 실측값을 따른다.
          F 세로획 기울기 -0.084 · 중괄호 대칭축 x=553 · 워드마크 x 335~712 · 여우 x 825~989
-       고유 글리프: 네 모서리 크롭 마크 + 점선 선택 사각형 (캡처 영역 지정) -->
+       고유 글리프: 네 모서리 크롭 마크 + 점선 선택 사각형 + 중앙 카메라 (캡처)
+       ⚠️ 노란 번개는 쓰지 않는다 — prj15 fSnippet·fSnippetCli 아이콘의 지배 요소라
+          같은 액센트를 쓰면 그 계열의 세 번째 변종으로 읽힌다(2026-09-09 사용자 지시) -->
   <defs>
     <linearGradient id="fmark" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0"    stop-color="#7a5980"/>
       <stop offset="0.35" stop-color="#664364"/>
       <stop offset="1"    stop-color="#3f2140"/>
     </linearGradient>
-    <linearGradient id="bolt" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#f2cf72"/>
-      <stop offset="1" stop-color="#d99f36"/>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5c3660"/>
+      <stop offset="1" stop-color="#3f2140"/>
     </linearGradient>
   </defs>
 
@@ -46,9 +48,20 @@
         fill="none" stroke="#482948" stroke-width="16"
         stroke-dasharray="32 22"/>
 
-  <!-- 노란 번개 액센트 -->
-  <path d="M 590 255 L 512 370 L 552 370 L 522 432 L 604 322 L 562 322 Z"
-        fill="url(#bolt)" stroke="#b98524" stroke-width="7" stroke-linejoin="round"/>
+  <!-- 고유 글리프 ③ 카메라 (선택 영역 안 = 그 영역을 찍는다) -->
+  <g>
+    <!-- 뷰파인더 돌출부 -->
+    <rect x="491" y="418" width="62" height="28" rx="9" fill="url(#body)"/>
+    <!-- 바디 -->
+    <rect x="461" y="440" width="184" height="128" rx="20" fill="url(#body)"/>
+    <!-- 렌즈 -->
+    <circle cx="553" cy="504" r="44" fill="#ffffff"/>
+    <circle cx="553" cy="504" r="30" fill="#8f6b92"/>
+    <circle cx="553" cy="504" r="15" fill="#2e1730"/>
+    <circle cx="542" cy="493" r="6"  fill="#ffffff" opacity="0.85"/>
+    <!-- 셔터 액센트 (번개를 대신하는 따뜻한 색 단서) -->
+    <circle cx="614" cy="466" r="12" fill="#e8b64a"/>
+  </g>
 
   <!-- 하단 infra 워드마크 -->
   <text x="328" y="918" font-family="Helvetica, Arial, sans-serif" font-size="224"
