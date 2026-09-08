@@ -60,6 +60,16 @@ Examples:
   fCapture config.json -R json --no-shadow              # JSON 설정 + CLI 오버라이드
   fCapture --relay 3 -t window_active                   # 3초 지연 후 활성 윈도우 캡처
 
+종료 코드 (Exit Code):
+  0  성공          요청한 모든 타겟을 캡처·저장함
+  1  사용법 오류    잘못된 인자, 설정 파일 부재·파싱 실패, 저장 경로 생성 실패
+  2  권한 거부      화면 기록(Screen Recording) 권한 없음 — 시스템 설정에서 허용 필요
+  3  대상 없음      요청한 타겟을 하나도 캡처하지 못함 (없는 디스플레이·윈도우 등)
+  4  부분 실패      다중 타겟 중 일부만 성공 (성공분은 stdout 에 출력됨)
+
+  결과 데이터는 stdout, 실패 사유는 stderr 로 나갑니다.
+  스크립트·MCP 연동 시 stdout 파싱 전에 종료 코드를 먼저 확인하십시오.
+
 설정 파일 위치: ~/.fCapture/
 로그 파일:     /tmp/fCapture.log
 

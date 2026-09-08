@@ -250,6 +250,28 @@ struct CaptureResult: Codable {
     let id: Int
 }
 
+// MARK: - Exit Code 규약
+/// 종료 코드는 호출자(MCP 서버·쉘 스크립트·Keyboard Maestro)가 결과를 기계적으로 판정하는 유일한 계약이다.
+/// stdout 은 `-R json`/`onlyPath` 에서 결과 데이터만 담고, 실패 사유는 stderr 에 사람이 읽을 문장으로 나간다.
+/// ⚠️ `noTarget`·`partial` 은 이전 버전에서 0(성공)으로 잘못 반환되던 경로다 — 조용한 실패를 막기 위해 분리했다.
+enum ExitCode: Int32 {
+    /// 요청한 모든 타겟 캡처·저장 성공
+    case success = 0
+    /// 사용법·설정 오류 — 잘못된 인자, 설정 파일 부재·파싱 실패, 저장 경로 생성 실패
+    case usage = 1
+    /// 화면 기록(Screen Recording) 권한 거부 — 사용자가 시스템 설정에서 허용해야 함
+    case permissionDenied = 2
+    /// 요청한 타겟을 하나도 캡처하지 못함 — 대상 없음(존재하지 않는 디스플레이·윈도우) 또는 전건 실패
+    case noTarget = 3
+    /// 일부만 성공 — 다중 타겟 중 최소 1건 성공, 최소 1건 실패
+    case partial = 4
+}
+
+/// 종료 코드를 지정해 프로세스를 끝낸다. 호출부가 `exit(1)` 같은 매직 넘버를 쓰지 않게 한다.
+func exitWith(_ code: ExitCode) -> Never {
+    exit(code.rawValue)
+}
+
 // MARK: - Configuration Structure
 struct ScreenCaptureConfig: Codable {
     var capturePath: CapturePathType?
@@ -526,7 +548,7 @@ struct ScreenCaptureApp {
                     if !["text", "json", "onlyPath"].contains(resultValue) {
                         let errorMessage = "잘못된 결과 형식: \(resultValue) (text, json, onlyPath 중 하나)"
                         logE(errorMessage)
-                        exit(1)
+                        exitWith(.usage)
                     }
                     overrides.result = resultValue
                 }
@@ -544,7 +566,7 @@ struct ScreenCaptureApp {
                     if components.count != 4 {
                         let errorMessage = "잘못된 --region 형식: \(regionStr) (올바른 형식: x,y,width,height)"
                         logE(errorMessage)
-                        exit(1)
+                        exitWith(.usage)
                     }
                     overrides.region = regionStr
                 }
@@ -596,12 +618,12 @@ struct ScreenCaptureApp {
                     let relayStr = args[i]
                     guard let relayValue = Double(relayStr), relayValue >= 0 else {
                         logE("잘못된 --relay 값: \(relayStr) (0 이상의 숫자, 단위: 초)")
-                        exit(1)
+                        exitWith(.usage)
                     }
                     overrides.relay = relayValue
                 } else {
                     logE("--relay 옵션에 지연 시간(초)이 필요합니다")
-                    exit(1)
+                    exitWith(.usage)
                 }
                 i += 1
                 continue
@@ -611,7 +633,7 @@ struct ScreenCaptureApp {
             if arg.hasPrefix("-") {
                 let errorMessage = "알 수 없는 옵션: \(arg)"
                 logE(errorMessage)
-                exit(1)
+                exitWith(.usage)
             }
 
             // 설정 파일 판별 (첫 번째 비옵션 인수)
@@ -627,7 +649,7 @@ struct ScreenCaptureApp {
                     if !FileManager.default.fileExists(atPath: expandedPath) {
                         let errorMessage = "설정 파일을 찾을 수 없습니다: \(arg)"
                         logE(errorMessage)
-                        exit(1)
+                        exitWith(.usage)
                     }
                     configFile = expandedPath
                 } else if FileManager.default.fileExists(atPath: arg) {
@@ -635,7 +657,7 @@ struct ScreenCaptureApp {
                 } else {
                     let errorMessage = "파일을 찾을 수 없습니다: \(arg)"
                     logE(errorMessage)
-                    exit(1)
+                    exitWith(.usage)
                 }
             }
 
@@ -658,7 +680,7 @@ struct ScreenCaptureApp {
                 } else {
                     // 유효하지 않은 target 값
                     logE("유효하지 않은 target 값: \(value)")
-                    exit(1)
+                    exitWith(.usage)
                 }
             } else {
                 merged.target = .multiple(overrides.targets)
@@ -704,7 +726,7 @@ struct ScreenCaptureApp {
             } else {
                 let errorMessage = "잘못된 --region 형식: \(regionStr) (올바른 형식: x,y,width,height)"
                 logE(errorMessage)
-                exit(1)
+                exitWith(.usage)
             }
         }
 
@@ -725,7 +747,7 @@ struct ScreenCaptureApp {
                     regionRect = ScreenCaptureConfig.RegionRect(x: parts[0], y: parts[1], width: parts[2], height: parts[3])
                 } else {
                     logE("잘못된 --scroll-region-rect 형식: \(rectStr) (올바른 형식: x,y,w,h)")
-                    exit(1)
+                    exitWith(.usage)
                 }
             }
 
@@ -813,7 +835,7 @@ struct ScreenCaptureApp {
             guard let loadedConfig = loadConfig(from: file) else {
                 let errorMessage = "설정 파일을 읽을 수 없습니다: \(file)"
                 logE(errorMessage)
-                exit(1)
+                exitWith(.usage)
             }
             baseConfig = loadedConfig
         } else if !overrides.targets.isEmpty || overrides.capturePath != nil || overrides.fileFormat != nil ||
@@ -1094,7 +1116,7 @@ struct ScreenCaptureApp {
         guard screenCapture.checkScreenRecordingPermission() else {
             logE("스크린 녹화 권한이 필요합니다.")
             logI("시스템 환경설정 > 보안 및 개인 정보 보호 > 화면 및 시스템 오디오 녹화에서 권한을 허용해주세요.")
-            exit(1)
+            exitWith(.permissionDenied)
         }
         
         // 결과 형식 결정 (JSON > StateManager 기본값 > text)
@@ -1132,7 +1154,7 @@ struct ScreenCaptureApp {
                     } catch {
                         let errorMessage = "저장 경로 생성 실패: \(pathToCheck) - \(error.localizedDescription)"
                         logE(errorMessage)
-                        exit(1)
+                        exitWith(.usage)
                     }
                 }
             }
@@ -1142,17 +1164,19 @@ struct ScreenCaptureApp {
         let targetType = config.target ?? .single("window_pointer")
         let targets = getTargetList(from: targetType, using: screenCapture)
 
-        // staticRegion 검증: staticRegion 타겟인데 staticRegion 설정이 없으면 exit(1)
+        // staticRegion 검증: staticRegion 타겟인데 staticRegion 설정이 없으면 usage(1) 로 종료
         if case .staticRegion = targetType {
             guard config.staticRegion != nil else {
                 let errorMessage = "staticRegion 타겟을 사용하려면 --region <x,y,w,h> 옵션 또는 설정 파일에 staticRegion 설정이 필요합니다"
                 logE(errorMessage)
-                exit(1)
+                exitWith(.usage)
             }
         }
 
         var captureResults: [CaptureResult] = []
-        
+        // 실패한 타겟 이름. 루프 종료 후 종료 코드(success/partial/noTarget) 판정에 쓴다.
+        var failedTargets: [String] = []
+
         for (index, target) in targets.enumerated() {
             do {
                 // 캡처 실행
@@ -1193,12 +1217,15 @@ struct ScreenCaptureApp {
                         StateManager.shared.updateState(fileName: fileName, id: currentID, logOutput: resultFormat == .text)
                     } catch {
                         success = false
-                        if resultFormat == .text {
-                            logE("바탕화면 저장도 실패했습니다: \(error.localizedDescription)")
-                        }
+                        // ⚠️ text 형식이 아닐 때도 실패는 알려야 한다 — stdout(JSON/경로)은 결과 데이터 전용이므로 stderr 로 보낸다
+                        logE("바탕화면 저장도 실패했습니다 (\(target)): \(error.localizedDescription)")
                     }
                 }
                 
+                if !success {
+                    failedTargets.append(target)
+                }
+
                 if success {
                     captureResults.append(CaptureResult(
                         filePath: actualFileURL.path,
@@ -1206,7 +1233,7 @@ struct ScreenCaptureApp {
                         target: target,
                         id: currentID
                     ))
-                    
+
                     // 백업 스크린 캡처 처리
                     if let backupPath = config.backupOtherScreen,
                        shouldBackupOtherScreen(target: target) {
@@ -1223,13 +1250,26 @@ struct ScreenCaptureApp {
                 }
                 
             } catch {
+                failedTargets.append(target)
                 let errorMessage = "캡처 실패 (\(target)): \(error.localizedDescription)"
                 logE(errorMessage)
             }
         }
-        
+
         // 결과 출력
         outputResults(captureResults, format: resultFormat)
+
+        // 종료 코드 판정 — stdout 을 이미 내보낸 뒤에 한다(호출자가 부분 결과를 읽을 수 있도록).
+        // 이전 버전은 전건 실패에도 0 을 반환해 호출자가 실패를 알 수 없었다.
+        if failedTargets.isEmpty {
+            exitWith(.success)
+        }
+        if captureResults.isEmpty {
+            logE("요청한 타겟을 하나도 캡처하지 못했습니다: \(failedTargets.joined(separator: ", "))")
+            exitWith(.noTarget)
+        }
+        logE("일부 타겟 캡처에 실패했습니다: \(failedTargets.joined(separator: ", "))")
+        exitWith(.partial)
     }
     
     // MARK: - Result Output
