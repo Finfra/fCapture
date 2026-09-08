@@ -5,7 +5,11 @@
           그 계열의 세 번째 변종으로 읽힌다 (2026-09-09 사용자 지시)
        ⚠️ 중괄호 {} · 점선 선택 사각형 제거 — 카메라를 키우기 위해 (2026-09-09 사용자 지시)
        동물은 **고양이**다. 여우가 아니다 — 눈 2개·검은 코·수염이 보여야 한다.
-       원본은 fBanner/app-icon.png 에서 추출(배경이 가장 깨끗) → cat-element.png -->
+       원본은 fBanner/app-icon.png 에서 추출(배경이 가장 깨끗) → cat-element.png
+       고양이 배치는 06.work 라이브러리의 형제 아이콘 실측 평균을 따른다 —
+         중심 (773, 702) · 폭 320 · 우여백 89
+         (fBanner 748/748/136 · fBoard 770/694/96 · fQRGen 802/668/52 · fWarrange 774/730/72)
+       ⚠️ 우여백 0 금지 — 모서리에 붙으면 잘린 것처럼 보인다(2026-09-09 실측 교정) -->
   <defs>
     <linearGradient id="fmark" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0"    stop-color="#7a5980"/>
@@ -26,25 +30,25 @@
 
   <!-- 네 모서리 크롭 마크 — 캡처 영역을 지시하는 프레임 -->
   <g fill="none" stroke="#482948" stroke-width="26" stroke-linecap="square">
-    <path d="M 336 380 L 336 290 L 426 290"/>
-    <path d="M 724 290 L 814 290 L 814 380"/>
-    <path d="M 336 630 L 336 720 L 426 720"/>
-    <path d="M 724 720 L 814 720 L 814 630"/>
+    <path d="M 336 322 L 336 232 L 426 232"/>
+    <path d="M 724 232 L 814 232 L 814 322"/>
+    <path d="M 336 530 L 336 620 L 426 620"/>
+    <path d="M 724 620 L 814 620 L 814 530"/>
   </g>
 
   <!-- 카메라 (주 글리프) -->
   <g>
     <!-- 뷰파인더 돌출부 -->
-    <rect x="452" y="352" width="128" height="54" rx="17" fill="url(#body)"/>
+    <rect x="452" y="288" width="128" height="52" rx="17" fill="url(#body)"/>
     <!-- 바디 -->
-    <rect x="400" y="398" width="350" height="262" rx="42" fill="url(#body)"/>
+    <rect x="400" y="332" width="350" height="248" rx="40" fill="url(#body)"/>
     <!-- 렌즈 -->
-    <circle cx="575" cy="530" r="92" fill="#ffffff"/>
-    <circle cx="575" cy="530" r="65" fill="#8f6b92"/>
-    <circle cx="575" cy="530" r="32" fill="#2e1730"/>
-    <circle cx="551" cy="506" r="13" fill="#ffffff" opacity="0.9"/>
+    <circle cx="575" cy="458" r="87" fill="#ffffff"/>
+    <circle cx="575" cy="458" r="61" fill="#8f6b92"/>
+    <circle cx="575" cy="458" r="30" fill="#2e1730"/>
+    <circle cx="552" cy="436" r="12" fill="#ffffff" opacity="0.9"/>
     <!-- 셔터 액센트 -->
-    <circle cx="697" cy="452" r="25" fill="#e8b64a"/>
+    <circle cx="697" cy="386" r="24" fill="#e8b64a"/>
   </g>
 
   <!-- 하단 infra 워드마크 -->
