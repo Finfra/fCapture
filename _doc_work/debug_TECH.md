@@ -88,3 +88,44 @@ MCP 서버(`_doc_work/report/mcp-server/mcp-server.js`)에 JSON-RPC 3건을 파�
 ## 해결
 
 in-flight 카운터를 두고 stdin 이 닫혀도 처리 중인 요청이 0 이 될 때까지 종료를 미룬다. prj20 이관 시 이 수정이 포함된 버전을 써야 한다.
+
+# 2026-09-11 · KM 에서만 안 되는 window_pointer — 코드는 그대로였고, 계측 3종으로 원인을 좁혔다 (Issue27)
+
+## 증상
+
+Keyboard Maestro 매크로 `CaptureWithPointer` 의 예전 명령 `fcapture -t window_pointer --result onlyPath` 가 오작동한다는 보고. 같은 매크로 군의 스크린 캡처(`{hostname}_Screen.json` 방식)는 정상이었다.
+
+## 계측 — 터미널에서는 어떤 경로도 실패하지 않았다
+
+| 실행 형태 | 종료 코드 | stdout |
+| :--- | :--- | :--- |
+| `-t window_pointer --result onlyPath` (일반 터미널) | 0 | 경로 1줄 (`~/Desktop/` 직하) |
+| 같은 명령, `env -i HOME=… PATH=/usr/bin:/bin /bin/sh -c` (KM 최소 환경 모사) | 0 | 경로 1줄 |
+| `jm4_Window.json --result onlyPath` | 0 | `~/df/..._window_pointer.png` |
+| `jm4_Window.json -t window_pointer --result onlyPath` | 0 | `~/df/..._window_pointer.png` |
+| `jm4_Screen.json --result onlyPath` (비교) | 0 | `~/df/..._screen1.png` |
+| `-t screen:9 --result onlyPath` (실패 경로, brew 본) | **0** | 빈 문자열 |
+
+## 원인 후보를 좁힌 근거
+
+* **코드는 예전과 같다** — `backup/pre-brew` 와 HEAD 의 `captureWindowPoint` 본문을 `awk` 로 뽑아 `diff` 하니 동일. CLI 옵션만 줄 때 내장 기본값을 쓰는 분기도 동일
+* **환경변수 차이도 아니다** — `env -i` 최소 환경에서 성공
+* **KM 이 실행하는 brew 본은 6월 릴리즈 그대로다** — 같은 실패 명령(`screen:9`)을 brew 본은 exit 0, 로컬 `.build/release`(9월 9일 빌드)는 exit 3. brew Formula 의 tarball 이 `v1.0.18`(= `6ebd1f5`)이고 Issue26_1 은 그 뒤 커밋이다
+* 남는 차이는 **트리거 시점의 마우스 위치**뿐이다. 포인터 아래 layer 0 윈도우가 없으면 "마우스 포인터 위치에 윈도우가 없습니다" 로 실패하고, brew 본은 exit 0 + 빈 stdout 을 돌려준다. KM 은 성공으로 보고 빈 경로를 후속 액션에 넘긴다 — [cli-contract-design.md](../_doc_arch/cli-contract-design.md) 가 경고한 바로 그 오독이다
+
+## 함정
+
+* `/tmp/fCapture.log` 는 **onlyPath 성공 시 아무것도 남기지 않는다.** 로그가 비어 있어도 "실패한 적 없음" 과 "실행한 적 없음" 을 구분할 수 없다
+* `strings` 로 한글 문자열 유무를 세어 바이너리 버전을 판정하려 했으나 UTF-8 한글은 기본 필터에 잡히지 않아 0 이 나온다(오진 위험). **바이너리 버전 판정은 같은 입력에 대한 exit code 비교**로 한다
+* `jm4_Window.json` 에 `target` 키가 두 번 있었다. "마지막 값이 이긴다" 고 가정했으나 실측은 **첫 번째 값**(`window_pointer`) 채택 — 파서 구현 의존이므로 중복 키 자체를 없애야 한다
+* KM 매크로 본체(plist)·Engine.log 는 타앱 데이터라 직접 읽지 않았다. 대신 매크로 스크립트에 `2>>/tmp/km_fcapture.err; echo "exit=$?" >>/tmp/km_fcapture.err` 를 붙이는 진단 1줄로 사용자 실측에 위임했다
+
+## 해결
+
+권장 명령은 스크린 매크로와 대칭인 JSON 방식 + 타겟 강제다.
+
+```bash
+/opt/homebrew/bin/fcapture ~/.fCapture/$KMVAR_hostname/${KMVAR_hostname}_Window.json -t window_pointer --result onlyPath
+```
+
+부수 발견: ① `jm4_Window.json` 의 `target` 중복 ② `~/.fCapture/jma/` 파일명이 전부 `jm4_*` 접두(jma 에서 exit 1) ③ brew 본에 Issue26_1 종료 코드 규약 미반영 — 새 릴리스 필요(Issue26_3 결정 근거).
