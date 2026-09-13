@@ -128,4 +128,4 @@ Keyboard Maestro 매크로 `CaptureWithPointer` 의 예전 명령 `fcapture -t w
 /opt/homebrew/bin/fcapture ~/.fCapture/$KMVAR_hostname/${KMVAR_hostname}_Window.json -t window_pointer --result onlyPath
 ```
 
-부수 발견: ① `jm4_Window.json` 의 `target` 중복 ② `~/.fCapture/jma/` 파일명이 전부 `jm4_*` 접두(jma 에서 exit 1) ③ brew 본에 Issue26_1 종료 코드 규약 미반영 — 새 릴리스 필요(Issue26_3 결정 근거).
+부수 발견: ① `jm4_Window.json` 의 `target` 중복 ② jm4 로컬의 `~/.fCapture/jma/` 사본 폴더 파일명이 전부 `jm4_*` 접두(jma 실기 폴더는 `jma_*.json` 으로 정상 — 2026-09-13 ssh 실측으로 정정) ③ brew 본에 Issue26_1 종료 코드 규약 미반영 — 새 릴리스 필요(Issue26_3 결정 근거).
