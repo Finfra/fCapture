@@ -19,7 +19,7 @@ class Fcapture < Formula
         System Settings > Privacy & Security > Screen Recording > 터미널(또는 사용 앱) 허용
 
       Source code: Apache-2.0. This official build is subject to DISTRIBUTION-TERMS.md:
-      free for individuals, education, non-profits, OSS, and organizations up to 250 concurrent copies.
+      free for personal use, education, non-profits, open-source projects, and other organizations up to 250 concurrent copies.
         https://github.com/Finfra/fCapture/blob/main/DISTRIBUTION-TERMS.md
     EOS
   end

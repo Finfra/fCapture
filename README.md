@@ -16,12 +16,13 @@ date: 2026-03-27
 
 ## 설치 (Homebrew)
 
+> **설치 전 확인** — 소스 코드는 Apache-2.0 이라 직접 빌드하면 제한 없이 쓴다. 공식 배포본(brew·GitHub Releases)은 개인 용도·교육·비영리·오픈소스 프로젝트는 무제한, 그 외 조직은 **동시 250 카피**까지 무료이며 초과·재판매·번들·호스팅은 [상업 라이선스](./COMMERCIAL.md)가 필요하다.
+> 공식 배포본을 내려받거나 설치·사용하면 [공식 배포본 약관 (DISTRIBUTION-TERMS.md)](./DISTRIBUTION-TERMS.md)에 동의한 것으로 본다 — 상세는 아래 [라이선스](#라이선스).
+
 ```bash
 brew install finfra/tap/fcapture
 fcapture --version
 ```
-
-> 소스는 Apache-2.0. 공식 배포본(brew·GitHub Releases)은 개인·교육·비영리·오픈소스 무제한, 그 외 조직은 동시 250 카피까지 무료 — 아래 [라이선스](#라이선스) 참조.
 
 ## Quick Start
 
@@ -238,8 +239,8 @@ cd fCapture && swift build -c release
 | 공식 배포본 (Homebrew tap `finfra/tap`, GitHub Releases) | [공식 배포본 약관 (DISTRIBUTION-TERMS.md)](./DISTRIBUTION-TERMS.md) |
 | 상업 라이선스 | [COMMERCIAL.md](./COMMERCIAL.md) — 문의 finfra@gmail.com |
 
-* **소스 빌드**: Apache-2.0 그대로 — 사용 제한 없음
-* **공식 배포본**: 개인·교육기관·비영리·오픈소스 프로젝트는 무제한, 그 외 조직(계열사 포함)은 **동시 설치 250 카피**까지 무료. 초과 설치·재판매·유료 번들·호스팅 서비스는 상업 라이선스 필요
+* **소스 빌드**: Apache-2.0 그대로 — 사용 제한 없음. 공식 배포본에서 Apache 오브젝트 코드만 추출해 쓰는 것도 같다(공식 빌드 구성요소·상표 제외)
+* **공식 배포본**: 개인 용도(조직이 관리하지 않는 기기)·교육기관·비영리·오픈소스 프로젝트는 무제한, 그 외 조직(계열사 포함)은 **동시 250 카피**(VM·컨테이너·CI 러너 포함)까지 무료. 초과 설치·재판매·유료 번들·호스팅 서비스는 상업 라이선스 필요
 * Copyright 2026 Finfra Co., Ltd. (https://finfra.kr)
 
 > **이전 배포본**: v1.0.18 까지 배포된 공식 빌드(brew·GitHub Releases)는 배포 당시 조건인 PolyForm Noncommercial License 1.0.0 으로 남는다. 2026-09-27 이후 배포본부터 위 조건이 적용된다.
