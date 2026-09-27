@@ -116,4 +116,5 @@ limitations under the License.
 | [NOTICE](NOTICE)                               | Apache-2.0 제4조 (d) 에 따라 재배포 시 보존해야 하는 고지                                                              |
 | [TRADEMARK.md](TRADEMARK.md)                   | 상표 정책 — Apache-2.0 제6조가 부여하지 않는 이름·아이콘의 사용 범위                                                   |
 | [DISTRIBUTION-TERMS.md](DISTRIBUTION-TERMS.md) | 공식 배포본(Homebrew tap `finfra/tap`, GitHub Releases) 약관 — 조직당 동시 250 카피까지 무료. 소스 빌드에는 적용 안 됨 |
+| [DISTRIBUTION-TERMS_ko.md](DISTRIBUTION-TERMS_ko.md) | 위 약관의 한국어본 — 대한민국 거주 개인에게는 영문과 동등한 효력(약관 §10), 그 밖에는 참고 번역 |
 | [COMMERCIAL.md](COMMERCIAL.md)                 | 상업 라이선스가 필요한 경우와 문의처 (finfra@gmail.com)                                                                |

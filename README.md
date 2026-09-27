@@ -17,7 +17,7 @@ date: 2026-03-27
 ## 설치 (Homebrew)
 
 > **설치 전 확인** — 소스 코드는 Apache-2.0 이라 직접 빌드하면 제한 없이 쓴다. 공식 배포본(brew·GitHub Releases)은 개인 용도·교육·비영리·오픈소스 프로젝트는 무제한, 그 외 조직은 **동시 250 카피**까지 무료이며 초과·재판매·번들·호스팅은 [상업 라이선스](./COMMERCIAL.md)가 필요하다.
-> 공식 배포본을 내려받거나 설치·사용하면 [공식 배포본 약관 (DISTRIBUTION-TERMS.md)](./DISTRIBUTION-TERMS.md)에 동의한 것으로 본다 — 상세는 아래 [라이선스](#라이선스).
+> 공식 배포본을 내려받거나 설치·사용하면 [공식 배포본 약관 (DISTRIBUTION-TERMS_ko.md)](./DISTRIBUTION-TERMS_ko.md)에 동의한 것으로 본다 — 상세는 아래 [라이선스](#라이선스).
 
 ```bash
 brew install finfra/tap/fcapture
@@ -236,7 +236,7 @@ cd fCapture && swift build -c release
 | :--- | :--- |
 | 소스 코드 | [Apache License 2.0](./LICENSE) ([한글 참고 번역](./LICENSE_ko.md)) · [NOTICE](./NOTICE) |
 | 이름 `fCapture`·`fcapture` | [상표 정책 (TRADEMARK.md)](./TRADEMARK.md) — Apache-2.0 제6조는 상표권을 부여하지 않음 |
-| 공식 배포본 (Homebrew tap `finfra/tap`, GitHub Releases) | [공식 배포본 약관 (DISTRIBUTION-TERMS.md)](./DISTRIBUTION-TERMS.md) |
+| 공식 배포본 (Homebrew tap `finfra/tap`, GitHub Releases) | [공식 배포본 약관 (DISTRIBUTION-TERMS.md)](./DISTRIBUTION-TERMS.md) ([한국어본](./DISTRIBUTION-TERMS_ko.md) — 대한민국 거주 개인에게 영문과 동등 효력) |
 | 공식 빌드 구성요소 [`resources/official/`](./resources/official/README.md) (배너·아이콘) | Apache 대상 아님 — 공식 빌드에만 들어간다. 공식 빌드는 `fcapture --version` 2줄째에 `Finfra Official Build` 를 표기하고, 소스 빌드는 버전 1줄만 출력한다 |
 | 상업 라이선스 | [COMMERCIAL.md](./COMMERCIAL.md) — 문의 finfra@gmail.com |
 
