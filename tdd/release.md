@@ -3,6 +3,7 @@ title: fCapture 배포 재생목록
 description: prj51 fCapture 의 Homebrew tap(Finfra/homebrew-tap) 출고와 ~/.bin/fCapture 설치 경로 검증 목록 (prj3#Issue717)
 date: 2026.09.27
 gate: pre-tag
+r2: warn
 env: jma
 ---
 
