@@ -82,7 +82,7 @@ fCapture data/settings/01_screen1.json  # JSON 설정 지정
 
 ## Homebrew 배포 (Issue22, 2026-06-24)
 
-* **소스 repo**: https://github.com/Finfra/fCapture (public, PolyForm Noncommercial 1.0.0)
+* **소스 repo**: https://github.com/Finfra/fCapture (public, Apache-2.0 + 상표·공식 배포본 약관 — Issue29. v1.0.18 까지 배포본은 PolyForm NC)
 * **tap**: https://github.com/Finfra/homebrew-tap → `Formula/fcapture.rb`
 * **설치**: `brew install finfra/tap/fcapture` (명령어 = 소문자 `fcapture`)
 * **릴리즈 절차·설계 SSOT**: `_doc_arch/brew-deploy-design.md`

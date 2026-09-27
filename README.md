@@ -21,7 +21,7 @@ brew install finfra/tap/fcapture
 fcapture --version
 ```
 
-> 비상업 사용 무료. 상업 사용은 별도 라이선스 필요 — 아래 [라이선스](#라이선스) 참조.
+> 소스는 Apache-2.0. 공식 배포본(brew·GitHub Releases)은 개인·교육·비영리·오픈소스 무제한, 그 외 조직은 동시 250 카피까지 무료 — 아래 [라이선스](#라이선스) 참조.
 
 ## Quick Start
 
@@ -231,8 +231,15 @@ cd fCapture && swift build -c release
 
 ## 라이선스
 
-[PolyForm Noncommercial License 1.0.0](./LICENSE) ([한글 참고 번역](./LICENSE_ko.md)).
+| 대상 | 라이선스·문서 |
+| :--- | :--- |
+| 소스 코드 | [Apache License 2.0](./LICENSE) ([한글 참고 번역](./LICENSE_ko.md)) · [NOTICE](./NOTICE) |
+| 이름 `fCapture`·`fcapture` | [상표 정책 (TRADEMARK.md)](./TRADEMARK.md) — Apache-2.0 제6조는 상표권을 부여하지 않음 |
+| 공식 배포본 (Homebrew tap `finfra/tap`, GitHub Releases) | [공식 배포본 약관 (DISTRIBUTION-TERMS.md)](./DISTRIBUTION-TERMS.md) |
+| 상업 라이선스 | [COMMERCIAL.md](./COMMERCIAL.md) — 문의 finfra@gmail.com |
 
-* **비상업 사용**: 무료 — 개인 학습·연구·취미·비영리 조직 등
-* **상업 사용**: 별도 상업 라이선스 필요 — 문의 [finfra.kr](https://finfra.kr)
-* Copyright Finfra Co., Ltd.
+* **소스 빌드**: Apache-2.0 그대로 — 사용 제한 없음
+* **공식 배포본**: 개인·교육기관·비영리·오픈소스 프로젝트는 무제한, 그 외 조직(계열사 포함)은 **동시 설치 250 카피**까지 무료. 초과 설치·재판매·유료 번들·호스팅 서비스는 상업 라이선스 필요
+* Copyright 2026 Finfra Co., Ltd. (https://finfra.kr)
+
+> **이전 배포본**: v1.0.18 까지 배포된 공식 빌드(brew·GitHub Releases)는 배포 당시 조건인 PolyForm Noncommercial License 1.0.0 으로 남는다. 2026-09-27 이후 배포본부터 위 조건이 적용된다.

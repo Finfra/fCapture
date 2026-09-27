@@ -83,8 +83,14 @@ file "$BIN" | sed 's/^/   /'
 PKG=$(mktemp -d)
 cp "$BIN" "$PKG/fcapture"
 codesign -s - -f "$PKG/fcapture" 2>/dev/null || echo -e "${YELLOW}⚠️  ad-hoc 서명 skip${NC}"
+# 라이선스 문서 동봉 — Apache-2.0 §4(a)(d)(LICENSE·NOTICE 전달) + 배포본 약관 §6(패키지 내 제시). Issue29
+LICENSE_DOCS=(LICENSE NOTICE TRADEMARK.md DISTRIBUTION-TERMS.md COMMERCIAL.md)
+for f in "${LICENSE_DOCS[@]}"; do
+    [[ -f "$SCRIPT_DIR/$f" ]] || { echo -e "${RED}❌ 라이선스 문서 없음: $f${NC}"; rm -rf "$PKG"; exit 1; }
+    cp "$SCRIPT_DIR/$f" "$PKG/$f"
+done
 TARBALL="$SCRIPT_DIR/fCapture-$VER.tar.gz"
-tar -czf "$TARBALL" -C "$PKG" fcapture
+tar -czf "$TARBALL" -C "$PKG" fcapture "${LICENSE_DOCS[@]}"
 rm -rf "$PKG"
 SHA=$(shasum -a 256 "$TARBALL" | awk '{print $1}')
 echo -e "${GREEN}✅ tarball: $TARBALL${NC}"

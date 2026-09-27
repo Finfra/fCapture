@@ -87,16 +87,17 @@ class Fcapture < Formula
   url "https://github.com/Finfra/fCapture/releases/download/v{VERSION}/fCapture-{VERSION}.tar.gz"
   version "{VERSION}"            # = git root 의 VERSION 파일 값
   sha256 "{tarball sha256}"      # = shasum -a 256 결과, 릴리즈 시 주입
-  license "PolyForm-Noncommercial-1.0.0"  # 소스 공개/비상업 무료/상업 유료 (prj1 모델)
+  license "Apache-2.0"           # 소스 Apache-2.0 + 공식 배포본 약관(DISTRIBUTION-TERMS.md) — Issue29
 
   depends_on :macos
 
   def install
     bin.install "fcapture"
+    prefix.install Dir["LICENSE", "NOTICE", "TRADEMARK.md", "DISTRIBUTION-TERMS.md", "COMMERCIAL.md"]
   end
 
   def caveats
-    # 화면 녹화 권한 + 라이선스 안내
+    # 화면 녹화 권한 + 배포본 약관 요약(DISTRIBUTION-TERMS.md §0)
   end
 
   test do
@@ -164,20 +165,22 @@ brew update && brew upgrade fcapture && fcapture --version
 
 # 향후 확장
 
-* ~~**brew core 등재**~~: 🚫 불가 — homebrew-core 는 오픈소스(자유 재배포) 라이선스만 수용. PolyForm Noncommercial 은 비상업 제한 → custom tap 한정 영구.
+* **brew core 등재**: 라이선스 장벽은 Issue29(Apache-2.0 전환)로 해소. 단 core 는 소스 빌드 formula 를 요구해 공식 배포본 약관(바이너리 대상)이 적용되지 않는 채널이 된다 — 등재 여부는 미결정 🚧 [TODO]
 * **공증(notarize)**: 현재 ad-hoc 서명 + brew(quarantine 미부여)로 동작. 직접 tarball 배포(brew 외) 시작하면 `xcrun notarytool` 공증 필요.
 * **fAppCli 공용 tap**: 이미 `Finfra/homebrew-tap` 에 `fsnippet-cli`·`fwarrange-cli`·`fcapture` 공존. 신규 형제 CLI 는 동일 tap 에 Formula 추가.
 
 # 설계 결정 요약
 
-* 배포 채널: **custom tap** `Finfra/homebrew-tap` (형제 CLI 공유). core 등재 불가(noncommercial).
+* 배포 채널: **custom tap** `Finfra/homebrew-tap` (형제 CLI 공유).
 * 배포 방식: **pre-built binary release asset** (universal2) — 형제 tap 컨벤션 일치 + Xcode 의존 제거. (초기 source-build 안에서 변경)
 * 버전 SSOT: `{git_root}/VERSION` 단일 원천 → `buildAndTest.sh` 가 빌드 전 `appVersion` sed 주입. Formula `version`·`sha256` 는 릴리즈 시 갱신.
-* 라이선스: PolyForm Noncommercial 1.0.0 (소스 공개/비상업 무료/상업 유료).
+* 라이선스: 소스 **Apache-2.0** + 훅 ①상표(`TRADEMARK.md`) ②공식 배포본 약관(`DISTRIBUTION-TERMS.md`, 조직당 동시 250 카피 무료) — 2026-09-27 Issue29, 정본 `___architect/_doc_arch/license-profiles.md` §4. v1.0.18 까지의 배포본은 PolyForm Noncommercial 1.0.0 으로 남는다. tarball 에 LICENSE·NOTICE·약관 문서 동봉.
 * 명령 이름: brew 설치본 `fcapture`(소문자). case-insensitive APFS 라 개발 머신은 로컬 `~/.bin/fCapture` 가 PATH shadow(사용자 무관).
 
 # 변경 이력 기준
 
+> 개정 (2026-09-27, Issue29): 라이선스를 PolyForm NC → Apache-2.0 + 훅 ①상표 ②공식 배포본 약관(N=250)으로 전환(정본 `license-profiles.md` 프로파일 A). Formula `license`·`caveats`·`prefix.install` 과 tarball 동봉 문서를 반영하고, brew core 등재 불가 전제를 «라이선스 장벽 해소·등재 미결정 🚧 [TODO]» 로 갱신함.
+>
 > 개정 (2026-07-21, Issue25): 잔여 마커 2건 해소. (1) 🔧 [FIXME] 리소스 접근을 `bundledResourceURL` 안전 헬퍼로 전환 — `Bundle.main` 미인식 문제를 SPM 번들 탐색으로 해소하되, `Bundle.module` 직접 접근의 배포본 crash 를 피함. resources 절 서술을 헬퍼 기준으로 갱신. (2) 🚧 [TODO] 릴리즈 절차를 루트 `deploy-brew.sh` 로 자동화(`bin/` gitignore 로 경로 정정).
 >
 > 개정 (2026-07-20, Issue23): `_doc_arch` ↔ 소스 정합성 감사. 선결 조건 2건이 Issue22 에서 충족되었음을 반영(🚧 마커 제거), 개요의 "외부 설치 경로 없음" 전제를 현재 상태로 갱신, `Formula 설계` 절 헤딩의 구안(source-build) 표기를 실채택(pre-built binary)으로 정정, sha256 placeholder 를 실파일 참조로 대체함. `Bundle.main` 접근부 인용을 라인 번호에서 심볼명 기준으로 전환함.
