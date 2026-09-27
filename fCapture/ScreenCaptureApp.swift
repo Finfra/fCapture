@@ -1,5 +1,6 @@
 import Foundation
 import AppKit
+import MachO
 
 // MARK: - State Management
 class StateManager {
@@ -441,6 +442,20 @@ struct CLIOverrides {
 struct ScreenCaptureApp {
     static let appVersion = "1.0.18"
 
+    /// 공식 빌드 배너를 반환합니다. deploy-brew.sh 가 resources/official/banner.txt 를
+    /// 링크 시 `__TEXT,__fc_banner` 섹션으로 삽입한 바이너리에만 있고, 소스 빌드는 nil (Issue30).
+    /// 배너 자체는 Official Build Component 라 Apache 대상이 아니다 (NOTICE).
+    static func officialBuildBanner() -> String? {
+        var size: UInt = 0
+        let header = #dsohandle.assumingMemoryBound(to: mach_header_64.self)
+        guard let bytes = getsectiondata(header, "__TEXT", "__fc_banner", &size), size > 0 else {
+            return nil
+        }
+        let text = String(decoding: UnsafeBufferPointer(start: bytes, count: Int(size)), as: UTF8.self)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return text.isEmpty ? nil : text
+    }
+
     /// CLI 인자를 파싱하여 (configFile, presetFlag, overrides)를 반환합니다.
     /// - parameters args: CommandLine.arguments
     /// - returns: (configFile: 경로or nil, presetFlag: "-s"/"-w"/"-r"/"-f"/"-h"or nil, overrides: CLIOverrides)
@@ -809,6 +824,9 @@ struct ScreenCaptureApp {
         // -v 플래그 즉시 처리
         if args.contains("-v") || args.contains("--version") {
             print("fCapture \(appVersion)")
+            if let banner = officialBuildBanner() {
+                print(banner)
+            }
             exit(0)
         }
 

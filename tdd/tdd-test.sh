@@ -21,6 +21,7 @@ if [[ ! -x "$BIN" ]]; then
 fi
 
 WORK="$(mktemp -d /tmp/fcapture-tdd.XXXXXX)"
+REAL_HOME="$HOME"   # 공식 빌드(swift build)는 실제 HOME 의 툴체인 캐시로 돌린다 — 격리는 fCapture 실행에만
 export HOME="$WORK/home"
 export CFFIXED_USER_HOME="$HOME"
 mkdir -p "$HOME"
@@ -64,7 +65,13 @@ finish() {
 stdout_empty() { [[ ! -s "$OUT" ]]; }
 stdout_lines() { [[ "$(grep -c '' "$OUT")" == "$1" ]]; }
 stderr_has() { grep -q "$1" "$ERR"; }
+stdout_has() { grep -q "$1" "$OUT"; }
+stdout_lacks() { ! grep -q "$1" "$OUT"; }
 rc_is() { [[ "$RC" == "$1" ]]; }
+# Mach-O 에 섹션이 있는가 (universal 은 슬라이스마다 나온다 — 하나라도 있으면 참)
+# otool 출력을 먼저 받는다 — 파이프로 grep -q 에 물리면 pipefail 환경에서 SIGPIPE 오판 (deploy-brew.sh 동일)
+has_section() { local cmds; cmds="$(otool -l "$1")"; grep -q "sectname $2" <<<"$cmds"; }
+lacks_section() { ! has_section "$@"; }
 
 # 1. -v/--version 출력이 VERSION 파일 값과 일치
 t_version_flag() {
@@ -197,7 +204,37 @@ EOF
     finish path-array-dir-create
 }
 
-ALL_IDS=(version-flag invalid-target-exit1 failure-exit-code-nonzero filename-id-zeropad companion-yaml-lookup window-pointer-onlypath relay-delay path-array-dir-create)
+# 11. 공식 빌드만 Official Build 구성요소(resources/official/)를 담는다 — 소스 빌드는 담지 않는다 (Issue30)
+#     공식 빌드는 deploy-brew.sh --build-only 산출물(universal2 · gh·Formula·소스 무접촉 — 이 목표만 빌드가 돈다).
+#     반복 실행은 FCAPTURE_OFFICIAL_BIN=<이미 만든 공식 빌드> 로 빌드를 건너뛴다
+t_official_build_marker() {
+    begin official-build-marker
+    local expected="fCapture $(tr -d '[:space:]' <"$VERSION_FILE")"
+
+    run --version
+    check "소스 빌드 --version → 'Official Build' 표기 없음" stdout_lacks "Official Build"
+    check "소스 빌드 → 배너 섹션 없음" lacks_section "$BIN" __fc_banner
+    check "소스 빌드 → 아이콘 섹션 없음" lacks_section "$BIN" __fc_icon
+
+    local official="${FCAPTURE_OFFICIAL_BIN:-}"
+    if [[ -z "$official" ]]; then
+        official="$(HOME="$REAL_HOME" CFFIXED_USER_HOME="$REAL_HOME" "$ROOT/deploy-brew.sh" --build-only 2>"$WORK/official-build.err" | tail -n 1)"
+    fi
+    check "공식 빌드 산출 ($official)" [ -x "$official" ]
+    [[ -x "$official" ]] || tail -n 5 "$WORK/official-build.err" | sed 's/^/       build: /'
+
+    local source_bin="$BIN"
+    BIN="$official"
+    run --version
+    BIN="$source_bin"
+    check "공식 빌드 --version 1줄째 = '$expected'" [ "$(head -n 1 "$OUT")" == "$expected" ]
+    check "공식 빌드 --version → 'Finfra Official Build' 표기" stdout_has "Finfra Official Build"
+    check "공식 빌드 → 배너 섹션 포함" has_section "$official" __fc_banner
+    check "공식 빌드 → 아이콘 섹션 포함" has_section "$official" __fc_icon
+    finish official-build-marker
+}
+
+ALL_IDS=(version-flag invalid-target-exit1 failure-exit-code-nonzero filename-id-zeropad companion-yaml-lookup window-pointer-onlypath relay-delay path-array-dir-create official-build-marker)
 IDS=("$@")
 [[ ${#IDS[@]} -eq 0 ]] && IDS=("${ALL_IDS[@]}")
 

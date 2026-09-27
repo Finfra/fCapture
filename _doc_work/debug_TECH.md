@@ -149,3 +149,27 @@ Keyboard Maestro 매크로 `CaptureWithPointer` 의 예전 명령 `fcapture -t w
 
 * `timeout 10s` 는 GNU coreutils 라 jma(brew coreutils 미설치)에서 `command not found` → grep 실패 → 오판. `perl -e 'alarm N; exec @ARGV'` 로 대체
 * Test 5 는 실패를 출력만 하고 성공 종료하던 것을 exit 1 로, Test 3 은 문구 변경(`설정 파일을 찾을 수 없습니다`) 반영 + exit 1 단언
+
+# 2026-09-27 · 공식 빌드에 섹션이 있는데 스크립트는 «누락» 이라 했다 — `pipefail` + `grep -q` (Issue30)
+
+## 증상
+
+`deploy-brew.sh --build-only` 가 universal2 공식 빌드를 끝낸 뒤 `❌ 공식 빌드 섹션 누락: __fc_banner` 로 exit 1. 그런데 같은 바이너리를 `otool -l | grep -c "sectname __fc"` 로 보면 **4**(아치 2 × 섹션 2)로 섹션은 멀쩡히 있었다.
+
+## ⚠️ 오진 경로
+
+* 1차 가설: multi-arch 빌드는 XCBuild(swiftbuild) 백엔드로 가는데, 거기서 `-Xlinker -sectcreate` 가 링커까지 전달되지 않는다 — **틀렸다.** 같은 인자로 손으로 빌드하자 섹션이 들어갔다
+* 2차 가설 `pipefail` 을 `bash -c 'set -o pipefail; otool -l … | grep -q …'` 로 재현하려 했을 때 **rc=0 이라 기각할 뻔했다.** 그때 쓴 바이너리는 배너 섹션 하나만 넣은 수동 빌드라 otool 출력이 짧았다
+
+## 원인
+
+`set -euo pipefail` 스크립트에서 `otool -l "$BIN" | grep -q PATTERN` — `grep -q` 는 첫 일치에서 바로 종료한다. otool 출력(이 바이너리 34KB)이 파이프 버퍼보다 크면 otool 이 쓰는 도중 SIGPIPE 를 받아 비정상 종료하고, `pipefail` 이 그 실패를 파이프라인 결과로 올린다. 일치했는데 «불일치» 로 판정된다. 실측: 같은 바이너리로 20회 반복 → **파이프 방식 20/20 오판, 출력 캡처 방식 0/20**.
+
+## 해결
+
+출력을 변수로 먼저 받고 here-string 으로 grep 한다 — `LOAD_CMDS=$(otool -l "$BIN"); grep -q "sectname $sect" <<<"$LOAD_CMDS"`. TDD 러너(`tdd/tdd-test.sh` `has_section`)는 `pipefail` 을 쓰지 않아 영향이 없었지만 같은 방식으로 맞췄다.
+
+## 계측 함정
+
+* 재현 실험은 **증상이 난 바로 그 산출물**로 한다. 출력 크기에 좌우되는 경합이라 다른 바이너리로는 재현되지 않는다
+* 일반화: `pipefail` 아래에서 «앞 명령 출력이 크고 뒤 명령이 조기 종료하는» 파이프(`| grep -q`, `| head -n 1`)는 성공을 실패로 뒤집는다

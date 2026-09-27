@@ -11,7 +11,8 @@ JSON/CLI 설정으로 화면·윈도우·영역을 캡처하는 CLI 의 옵션 �
 * 기존 러너: `cd ~/_git/__all/fCapture && ./buildAndTest.sh && ./captureTest.sh`
 * 신규 러너: `./tdd/tdd-test.sh [id ...]` — Screen Recording 권한이 있는 GUI 세션 필요(jma 는 GUI tmux 경유), HOME·CFFIXED_USER_HOME 격리
 * 최종 green: 2026-09-27 jma (prj5#Issue100) — tdd-test 8/8 + captureTest 전 단계(1디스플레이라 screen2 예제는 SKIP)
-* 목표 10개 중 기존 테스트로 덮인 것 2개 · 신규 8개
+* 목표 11개 중 기존 테스트로 덮인 것 2개 · 신규 9개
+* #11 `official-build-marker` green: 2026-09-27 jm4 (Issue30) — `--version`·Mach-O 섹션만 보므로 Screen Recording 권한 불요. 공식 빌드는 `deploy-brew.sh --build-only`(universal2, 소스 무접촉)로 만든다 — 이 목표만 빌드가 돌아 느리다. 반복 실행은 `FCAPTURE_OFFICIAL_BIN=<공식 빌드 경로>` 로 건너뛴다
 
 # 재생목록
 
@@ -29,6 +30,7 @@ JSON/CLI 설정으로 화면·윈도우·영역을 캡처하는 CLI 의 옵션 �
 | 8 | `window-pointer-onlypath` | -t window_pointer --result onlyPath 실행 시 저장된 파일 경로 1줄만 stdout 에 출력되고 파일이 존재한다 | Issue27 KM 윈도우 캡처 매크로 오작동 — 권장 명령 실측 | `cd ~/_git/__all/fCapture && ./tdd/tdd-test.sh window-pointer-onlypath` | ✅ 신규 |
 | 9 | `relay-delay` | --relay N 또는 config relay 지정 시 캡처가 N초 지연 후 실행된다 | Issue20 --relay 지연 캡처; Issue21 yml/config 기반 relay | `cd ~/_git/__all/fCapture && ./tdd/tdd-test.sh relay-delay` | ✅ 신규 |
 | 10 | `path-array-dir-create` | capturePath 배열 인덱스가 가리키는 폴더가 없으면 생성해 그곳에 저장한다(바탕화면 폴백으로 새지 않는다) | prj5#Issue100 중 jma 실측 — `capturePath: 0` → `~/Desktop/capture` 미존재 시 저장 실패·바탕화면 폴백, captureTest Test 2 red | `cd ~/_git/__all/fCapture && ./tdd/tdd-test.sh path-array-dir-create` | ✅ 신규 |
+| 11 | `official-build-marker` | 공식 빌드(`deploy-brew.sh`)만 Official Build 구성요소(`resources/official/` 배너·아이콘 → Mach-O `__fc_banner`·`__fc_icon`)를 담고 `--version` 에 `Finfra Official Build` 를 표기한다 — 소스 빌드는 어느 것도 담지 않는다 | Issue30 — 없으면 배포본 약관 §1(b) 가 빈 집합이라 적용 대상이 구별되지 않음(prj6#Issue17 적대적 검토) | `cd ~/_git/__all/fCapture && ./tdd/tdd-test.sh official-build-marker` | ✅ 신규 |
 
 # 규약
 

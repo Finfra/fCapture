@@ -135,9 +135,14 @@ version-manager-m 규칙 준수: `{git_root}/VERSION` 이 단일 진실 원천.
 # 1. 버전 갱신
 echo "1.0.19" > VERSION
 
-# 2. universal2 빌드 (appVersion 자동 주입은 buildAndTest.sh, 여기선 직접)
-cd fCapture && swift build -c release --arch arm64 --arch x86_64
-BIN=$(swift build -c release --arch arm64 --arch x86_64 --show-bin-path)/fCapture
+# 2. universal2 공식 빌드 (appVersion 자동 주입은 buildAndTest.sh, 여기선 직접)
+#    resources/official/ 를 Mach-O 섹션으로 링크 — 소스 빌드와 구별되는 유일한 지점 (아래 "공식 빌드 구분 표식")
+cd fCapture
+OFFICIAL=(swift build -c release --arch arm64 --arch x86_64 --scratch-path .build/official
+  -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __fc_banner -Xlinker "$PWD/../resources/official/banner.txt"
+  -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __fc_icon   -Xlinker "$PWD/../resources/official/icon.png")
+BIN=$("${OFFICIAL[@]}" --show-bin-path)/fCapture
+rm -f "$BIN" && "${OFFICIAL[@]}"   # 섹션 입력 파일은 의존성 추적 밖 — 재링크 강제
 
 # 3. tarball 패키징 (바이너리명 소문자 fcapture) + ad-hoc 서명
 cp "$BIN" /tmp/pkg/fcapture && codesign -s - -f /tmp/pkg/fcapture
@@ -159,9 +164,25 @@ brew update && brew upgrade fcapture && fcapture --version
 ./deploy-brew.sh                  # VERSION 파일 버전으로 릴리즈
 ./deploy-brew.sh --version 1.0.19 # 버전 갱신 후 릴리즈 (VERSION 파일에 기록)
 ./deploy-brew.sh --dry-run        # 빌드·tarball·sha256 까지만 (gh release·Formula 미변경)
+./deploy-brew.sh --build-only     # 공식 빌드만 — 바이너리 경로를 마지막 줄에 출력 (gh·tarball·Formula·VERSION·소스 무접촉, TDD #11 용)
 ```
 
-스크립트는 VERSION 주입 → universal2 빌드 → tarball(ad-hoc 서명) → sha256 → `gh release create` → 로컬 `Formula/fcapture.rb` 갱신까지 수행한다. 이미 존재하는 릴리즈 태그는 덮어쓰기 사고 방지를 위해 중단한다. tap repo(`Finfra/homebrew-tap`) push 는 로컬 clone 의존을 없애기 위해 수동 단계로 안내만 한다.
+스크립트는 VERSION 주입 → universal2 공식 빌드(섹션 2종 존재 검사) → tarball(ad-hoc 서명) → sha256 → `gh release create` → 로컬 `Formula/fcapture.rb` 갱신까지 수행한다. 이미 존재하는 릴리즈 태그는 덮어쓰기 사고 방지를 위해 중단한다. tap repo(`Finfra/homebrew-tap`) push 는 로컬 clone 의존을 없애기 위해 수동 단계로 안내만 한다.
+
+## 공식 빌드 구분 표식 (Issue30)
+
+배포본 약관 v1.2 §1(b) 는 공식 빌드를 «Apache 오브젝트 코드 + Official Build Components» 의 통합 패키지로 정의한다. 구성요소가 실제로 없으면 (b) 가 빈 집합이라 소스 빌드와 공식 빌드가 구별되지 않고, 법무가 약관을 적용할 대상을 못 찾는다(정본 `license-profiles.md` §3-2).
+
+| 항목 | 공식 빌드 (`deploy-brew.sh`) | 소스 빌드 (`swift build`·`buildAndTest.sh`) |
+| :--- | :--- | :--- |
+| `resources/official/banner.txt` | `__TEXT,__fc_banner` 섹션으로 링크 | 없음 |
+| `resources/official/icon.png` | `__TEXT,__fc_icon` 섹션으로 링크 | 없음 |
+| `fcapture --version` | `fCapture X.Y.Z` + 2줄째 `Finfra Official Build (https://finfra.kr)` | `fCapture X.Y.Z` 1줄 |
+
+* **왜 링크 섹션인가**: brew 는 tarball 의 `fcapture` 하나만 설치한다(리소스 번들 없음). 바이너리 안에 넣어야 설치본에 구성요소가 남는다. Swift 소스(Apache)에는 섹션을 읽는 일반 코드(`officialBuildBanner()`)만 두고 배너 문구 자체는 두지 않는다 — 문구는 Apache 대상이 아닌 `resources/official/` 에 산다(NOTICE)
+* **scratch path 분리**: 공식 빌드는 `fCapture/.build/official` 을 쓴다. 소스 빌드 산출물(`.build/release`)에 섹션이 섞여 들어가지 않는다
+* **재링크 강제**: `-sectcreate` 입력 파일은 SwiftPM 의존성 추적 밖이라 배너만 바꾸면 재링크되지 않는다. 스크립트가 빌드 전에 산출 바이너리를 지운다(실측: 배너에 한 줄 추가 → `--build-only` → 반영 확인)
+* 검증: `tdd/playlist.md` #11 `official-build-marker`
 
 # 향후 확장
 
@@ -174,11 +195,13 @@ brew update && brew upgrade fcapture && fcapture --version
 * 배포 채널: **custom tap** `Finfra/homebrew-tap` (형제 CLI 공유).
 * 배포 방식: **pre-built binary release asset** (universal2) — 형제 tap 컨벤션 일치 + Xcode 의존 제거. (초기 source-build 안에서 변경)
 * 버전 SSOT: `{git_root}/VERSION` 단일 원천 → `buildAndTest.sh` 가 빌드 전 `appVersion` sed 주입. Formula `version`·`sha256` 는 릴리즈 시 갱신.
-* 라이선스: 소스 **Apache-2.0** + 훅 ①상표(`TRADEMARK.md`) ②공식 배포본 약관(`DISTRIBUTION-TERMS.md`, 조직당 동시 250 카피 무료) — 2026-09-27 Issue29, 정본 `___architect/_doc_arch/license-profiles.md` §4. v1.0.18 까지의 배포본은 PolyForm Noncommercial 1.0.0 으로 남는다. tarball 에 LICENSE·NOTICE·약관 문서 동봉.
+* 라이선스: 소스 **Apache-2.0** + 훅 ①상표(`TRADEMARK.md`) ②공식 배포본 약관(`DISTRIBUTION-TERMS.md`, 조직당 동시 250 카피 무료) — 2026-09-27 Issue29, 정본 `___architect/_doc_arch/license-profiles.md` §4. v1.0.18 까지의 배포본은 PolyForm Noncommercial 1.0.0 으로 남는다. tarball 에 LICENSE·NOTICE·약관 문서 동봉. 약관 v1.2 재동기와 공식 빌드 구분 표식(`resources/official/` → Mach-O 섹션, `--version` 2줄째)은 Issue30.
 * 명령 이름: brew 설치본 `fcapture`(소문자). case-insensitive APFS 라 개발 머신은 로컬 `~/.bin/fCapture` 가 PATH shadow(사용자 무관).
 
 # 변경 이력 기준
 
+> 개정 (2026-09-27, Issue30): 배포본 약관 v1.2 §1(b) 이행 — 릴리즈 절차 2단계를 «universal2 공식 빌드» 로 바꾸고 `resources/official/`(배너·아이콘) 섹션 링크·scratch path 분리·재링크 강제를 기술. `--build-only` 옵션과 «공식 빌드 구분 표식» 절 신설.
+>
 > 개정 (2026-09-27, Issue29): 라이선스를 PolyForm NC → Apache-2.0 + 훅 ①상표 ②공식 배포본 약관(N=250)으로 전환(정본 `license-profiles.md` 프로파일 A). Formula `license`·`caveats`·`prefix.install` 과 tarball 동봉 문서를 반영하고, brew core 등재 불가 전제를 «라이선스 장벽 해소·등재 미결정 🚧 [TODO]» 로 갱신함.
 >
 > 개정 (2026-07-21, Issue25): 잔여 마커 2건 해소. (1) 🔧 [FIXME] 리소스 접근을 `bundledResourceURL` 안전 헬퍼로 전환 — `Bundle.main` 미인식 문제를 SPM 번들 탐색으로 해소하되, `Bundle.module` 직접 접근의 배포본 crash 를 피함. resources 절 서술을 헬퍼 기준으로 갱신. (2) 🚧 [TODO] 릴리즈 절차를 루트 `deploy-brew.sh` 로 자동화(`bin/` gitignore 로 경로 정정).

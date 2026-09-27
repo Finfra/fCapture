@@ -1,0 +1,2 @@
+Finfra Official Build (https://finfra.kr)
+This build is subject to DISTRIBUTION-TERMS.md; the source code is Apache-2.0.

@@ -237,6 +237,7 @@ cd fCapture && swift build -c release
 | 소스 코드 | [Apache License 2.0](./LICENSE) ([한글 참고 번역](./LICENSE_ko.md)) · [NOTICE](./NOTICE) |
 | 이름 `fCapture`·`fcapture` | [상표 정책 (TRADEMARK.md)](./TRADEMARK.md) — Apache-2.0 제6조는 상표권을 부여하지 않음 |
 | 공식 배포본 (Homebrew tap `finfra/tap`, GitHub Releases) | [공식 배포본 약관 (DISTRIBUTION-TERMS.md)](./DISTRIBUTION-TERMS.md) |
+| 공식 빌드 구성요소 [`resources/official/`](./resources/official/README.md) (배너·아이콘) | Apache 대상 아님 — 공식 빌드에만 들어간다. 공식 빌드는 `fcapture --version` 2줄째에 `Finfra Official Build` 를 표기하고, 소스 빌드는 버전 1줄만 출력한다 |
 | 상업 라이선스 | [COMMERCIAL.md](./COMMERCIAL.md) — 문의 finfra@gmail.com |
 
 * **소스 빌드**: Apache-2.0 그대로 — 사용 제한 없음. 공식 배포본에서 Apache 오브젝트 코드만 추출해 쓰는 것도 같다(공식 빌드 구성요소·상표 제외)

@@ -7,6 +7,9 @@ build configuration, code signature), this product is licensed under the Apache
 License, Version 2.0. See LICENSE. Official Builds are additionally subject to
 DISTRIBUTION-TERMS.md (where present).
 
+The files under resources/official/ are Official Build Components. They are not
+licensed under the Apache License and are included only in Official Builds.
+
 "fCapture", "fcapture", the fCapture icon, "Finfra", their respective logos and the
 "Powered by finfra.kr" line are trademarks of Finfra Co., Ltd. (https://finfra.kr).
 Use of these marks is governed by TRADEMARK.md and is not granted by the Apache
