@@ -129,3 +129,23 @@ Keyboard Maestro 매크로 `CaptureWithPointer` 의 예전 명령 `fcapture -t w
 ```
 
 부수 발견: ① `jm4_Window.json` 의 `target` 중복 ② jm4 로컬의 `~/.fCapture/jma/` 사본 폴더 파일명이 전부 `jm4_*` 접두(jma 실기 폴더는 `jma_*.json` 으로 정상 — 2026-09-13 ssh 실측으로 정정) ③ brew 본에 Issue26_1 종료 코드 규약 미반영 — 새 릴리스 필요(Issue26_3 결정 근거).
+
+# 2026-09-27 — TDD 재생목록 green 중 발견 3건 (prj5#Issue100)
+
+## ① capturePath 배열 인덱스 경로 미생성 → 바탕화면 조용한 폴백
+
+* 증상: jma `captureTest.sh` Test 2 red. 출력이 `스크린샷이 저장되었습니다` 가 아니라 `바탕화면에 저장되었습니다` — exit 0 이라 호출자는 모름
+* 원인: `defaultSetting.json` 의 `capturePath: 0` → `capturePathArray[0]` = `~/Desktop/capture` 가 jma 에 없음. `performCapture` 는 `-p` 문자열 경로만 생성하고 `.index` 는 *"검증 불필요"* 로 건너뜀
+* 해결: `.index` 도 배열 경로를 `pathToCheck` 로 삼아 생성. 재현 목표 `path-array-dir-create`
+* 함정: jm4 에서는 폴더가 이미 있어 재현 안 됨 — 머신 상태 의존 버그
+
+## ② HOME 을 바꿔도 ~/.fCapture 가 격리되지 않음
+
+* 증상: `HOME=<tmp>` 로 돌린 `%id` 테스트가 `tdd_001` 이 아니라 `tdd_017` (jma 실제 카운터)
+* 원인: `FileManager.homeDirectoryForCurrentUser` 는 `HOME` env 를 무시한다. **`CFFIXED_USER_HOME`** 을 함께 지정해야 격리된다
+* 함정: 첫 실행은 우연히 green — 실제 카운터가 3시간·날짜 리셋 직후라 001 이었다. 한 번 green 을 격리 증명으로 믿지 말 것
+
+## ③ captureTest.sh 이식성 — macOS 에 `timeout` 없음
+
+* `timeout 10s` 는 GNU coreutils 라 jma(brew coreutils 미설치)에서 `command not found` → grep 실패 → 오판. `perl -e 'alarm N; exec @ARGV'` 로 대체
+* Test 5 는 실패를 출력만 하고 성공 종료하던 것을 exit 1 로, Test 3 은 문구 변경(`설정 파일을 찾을 수 없습니다`) 반영 + exit 1 단언

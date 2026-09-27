@@ -1137,9 +1137,11 @@ struct ScreenCaptureApp {
             case .string(let pathString):
                 let resolved = resolvePathReference(pathString)
                 pathToCheck = NSString(string: resolved).expandingTildeInPath
-            case .index(_):
-                // 배열 인덱스는 검증 불필요
-                break
+            case .index(let index):
+                // 배열 경로도 -p 와 같이 없으면 만든다 — 안 만들면 저장이 실패해 바탕화면으로 조용히 폴백된다 (prj5#Issue100 jma 실측)
+                if let pathArray = config.capturePathArray, index >= 0 && index < pathArray.count {
+                    pathToCheck = NSString(string: pathArray[index]).expandingTildeInPath
+                }
             }
 
             if let pathToCheck = pathToCheck {

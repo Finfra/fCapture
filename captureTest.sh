@@ -12,6 +12,12 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# macOS 기본에는 GNU timeout 이 없다 — perl alarm 으로 대체 (jma 실측: timeout 부재로 Test 2 가 grep 실패로 오판)
+run_timeout() {
+    local seconds="$1"; shift
+    perl -e 'alarm shift; exec @ARGV' "$seconds" "$@"
+}
+
 # 헤더 출력
 echo -e "${BLUE}🧪 fCapture Capture Tests${NC}"
 echo "===================================="
@@ -44,7 +50,7 @@ fi
 # 테스트 2: 설정 파일 없이 실행 (기본값 테스트)
 echo -e "${YELLOW}Test 2: Default execution test${NC}"
 cd bin
-if timeout 10s ./fCapture 2>&1 | grep -q "스크린샷이 저장되었습니다\|기본값으로 실행합니다"; then
+if run_timeout 10 ./fCapture 2>&1 | grep -q "스크린샷이 저장되었습니다\|기본값으로 실행합니다"; then
     echo -e "${GREEN}✅ Default execution successful${NC}"
 else
     echo -e "${RED}❌ Default execution failed${NC}"
@@ -53,13 +59,17 @@ else
 fi
 cd ..
 
-# 테스트 3: 존재하지 않는 설정 파일로 오류 처리 테스트
+# 테스트 3: 존재하지 않는 설정 파일로 오류 처리 테스트 — 오류 문구 + exit 1(usage)
 echo -e "${YELLOW}Test 3: Error handling test${NC}"
 cd bin
-if ./fCapture nonexistent.json 2>&1 | grep -q "설정 파일을 읽을 수 없습니다\|설정 파일이 존재하지 않습니다"; then
+set +e
+err_out=$(./fCapture nonexistent.json 2>&1)
+err_rc=$?
+set -e
+if [[ $err_rc -eq 1 ]] && grep -q "설정 파일을 찾을 수 없습니다\|설정 파일을 읽을 수 없습니다\|설정 파일이 존재하지 않습니다" <<<"$err_out"; then
     echo -e "${GREEN}✅ Error handling works correctly${NC}"
 else
-    echo -e "${RED}❌ Error handling failed${NC}"
+    echo -e "${RED}❌ Error handling failed (rc=$err_rc): $err_out${NC}"
     cd ..
     exit 1
 fi
@@ -69,7 +79,7 @@ cd ..
 if [[ -f "bin/.fCapture.json" ]]; then
     echo -e "${YELLOW}Test 4: Configuration file test${NC}"
     cd bin
-    if timeout 10s ./fCapture .fCapture.json 2>&1 | grep -q "스크린샷이 저장되었습니다"; then
+    if run_timeout 10 ./fCapture .fCapture.json 2>&1 | grep -q "스크린샷이 저장되었습니다"; then
         echo -e "${GREEN}✅ Configuration file execution successful${NC}"
     else
         echo -e "${RED}❌ Configuration file execution failed${NC}"
@@ -86,16 +96,31 @@ if [[ -d "data" ]]; then
     # 몇 가지 예제 파일 테스트
     test_files=("data/settings/00_default.json" "data/settings/01_screen1.json" "data/settings/02_screen2.json")
     
+    # 디스플레이 수 — 없는 화면을 요구하는 예제는 실패가 아니라 명시적 SKIP
+    display_count=$(system_profiler SPDisplaysDataType 2>/dev/null | grep -c "Resolution:")
+    example_failed=0
+
     for test_file in "${test_files[@]}"; do
         if [[ -f "$test_file" ]]; then
+            if [[ "$test_file" == *"02_screen2.json" && "$display_count" -lt 2 ]]; then
+                echo -e "  ${YELLOW}⏭  $test_file SKIP (디스플레이 ${display_count}개 — screen:2 없음)${NC}"
+                continue
+            fi
             echo -e "  Testing: ${test_file}"
-            if timeout 10s ./bin/fCapture "$test_file" 2>&1 | grep -q "스크린샷이 저장되었습니다"; then
+            if run_timeout 10 ./bin/fCapture "$test_file" 2>&1 | grep -q "스크린샷이 저장되었습니다"; then
                 echo -e "  ${GREEN}✅ $test_file test successful${NC}"
             else
                 echo -e "  ${RED}❌ $test_file test failed${NC}"
+                example_failed=1
             fi
         fi
     done
+
+    # 실패를 삼키지 않는다 — 예제 하나라도 실패하면 스크립트 실패
+    if [[ $example_failed -ne 0 ]]; then
+        echo -e "${RED}❌ Example JSON files test failed${NC}"
+        exit 1
+    fi
 fi
 
 # 테스트 완료
