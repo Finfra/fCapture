@@ -10,7 +10,8 @@ JSON/CLI 설정으로 화면·윈도우·영역을 캡처하는 CLI 의 옵션 �
 
 * 기존 러너: `cd ~/_git/__all/fCapture && ./buildAndTest.sh && ./captureTest.sh`
 * 신규 러너: `./tdd/tdd-test.sh [id ...]` — Screen Recording 권한이 있는 GUI 세션 필요(jma 는 GUI tmux 경유), HOME·CFFIXED_USER_HOME 격리
-* 최종 green: 2026-09-27 jma (prj5#Issue100) — tdd-test 8/8 + captureTest 전 단계(1디스플레이라 screen2 예제는 SKIP)
+* 최종 green: 2026-09-29 jma (prj5#Issue108 · Issue32) — HEAD `5cba94c` 스냅샷에서 11행 전부 green(tdd-test 9/9 + captureTest 전 단계, 1디스플레이라 screen2 예제는 SKIP)
+* 이전 green: 2026-09-27 jma (prj5#Issue100) — tdd-test 8/8 + captureTest 전 단계
 * 목표 11개 중 기존 테스트로 덮인 것 2개 · 신규 9개
 * #11 `official-build-marker` green: 2026-09-27 jm4 (Issue30) — `--version`·Mach-O 섹션만 보므로 Screen Recording 권한 불요. 공식 빌드는 `deploy-brew.sh --build-only`(universal2, 소스 무접촉)로 만든다 — 이 목표만 빌드가 돌아 느리다. 반복 실행은 `FCAPTURE_OFFICIAL_BIN=<공식 빌드 경로>` 로 건너뛴다
 
