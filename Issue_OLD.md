@@ -2,7 +2,7 @@
 
 
 ## Issue2: DefaultSettingPath.txt 지원 ✅
-* 목적: 파라메터 없이 실행 시 ~/.fCapture/DefaultSettingPath.txt에서 기본 설정 파일 경로 읽기
+* 목적: 파라미터 없이 실행 시 ~/.fCapture/DefaultSettingPath.txt에서 기본 설정 파일 경로 읽기
 * 구현 명세:
     - loadDefaultConfigPath() 함수 추가
     - 틸드 경로 확장 지원 (~/.fCapture/ → 절대경로)
@@ -23,8 +23,8 @@
     - determineSavePath 로직 확장 (인덱스 기반 경로 선택)
     - 에러 처리 및 폴백 기능 (잘못된 인덱스 시 Desktop 사용)
 
-## Issue4: 파라메터 없이 실행 시 DefaultSettingPath.txt 기본 경로 설정 ✅
-* 목적: 파라메터 없이 실행하면 DefaultSettingPath.txt 파일을 읽어서 해당 파일의 경로를 기본 저장 경로로 설정
+## Issue4: 파라미터 없이 실행 시 DefaultSettingPath.txt 기본 경로 설정 ✅
+* 목적: 파라미터 없이 실행하면 DefaultSettingPath.txt 파일을 읽어서 해당 파일의 경로를 기본 저장 경로로 설정
 
 ## Issue5: .fCapture.json·DefaultSettingPath.txt 제거 → ~/.fCapture/defaultSetting.json 도입 (등록: 2026-03-27, 해결: 2026-03-27, commit: ffeeb03) ✅
 * 목적: 설정 우선순위 단순화 및 사용자 기본 설정을 단일 파일로 관리

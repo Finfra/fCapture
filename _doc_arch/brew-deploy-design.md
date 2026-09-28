@@ -44,7 +44,7 @@ Homebrew CLI 배포는 2가지 경로가 있음. fCapture 특성(Screen Recordin
 | :----------------- | :---------------------------------------------- | :----------------------------------------------- |
 | Formula 동작       | `swift build -c release` 후 `bin.install`       | release 에 올린 바이너리 tarball download         |
 | 빌드 의존성        | 사용자 Xcode CLT 필요                            | 없음 (다운로드만)                                |
-| 아키텍처 처리      | arch 무관 (현장 빌드)                            | arm64/x86_64 별 asset + sha256 각각 관리          |
+| 아키텍처 처리      | arch 무관 (현장 빌드)                            | arm64/x86_64별 asset + sha256 각각 관리           |
 | Gatekeeper/공증    | **불필요** (사용자가 직접 빌드)                  | 필요 — 미서명 바이너리는 quarantine 차단 위험     |
 | 설치 속도          | 느림 (컴파일)                                   | 빠름                                             |
 | 유지 비용          | 낮음 (source tarball sha256 1개)                | 높음 (arch별 빌드·서명·공증·sha256 갱신)          |

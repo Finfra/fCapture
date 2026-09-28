@@ -1,6 +1,6 @@
 ---
 name: cli-contract-design
-description: fCapture CLI 를 사람이 아닌 프로그램(MCP 서버·쉘 스크립트·Keyboard Maestro)이 호출할 때의 계약 — 종료 코드·stdout/stderr 분리·출력 형식
+description: fCapture CLI 를 사람이 아닌 프로그램(MCP 서버·셸 스크립트·Keyboard Maestro)이 호출할 때의 계약 — 종료 코드·stdout/stderr 분리·출력 형식
 date: 2026.09.09
 ---
 
@@ -8,7 +8,7 @@ date: 2026.09.09
 
 fCapture 는 사람이 터미널에서 치는 도구인 동시에, **다른 프로그램이 호출하는 하위 도구**다. 호출자는 캡처가 성공했는지, 실패했다면 왜 실패했는지를 **기계적으로** 판정해야 한다. 본 문서는 그 판정 수단인 종료 코드와 출력 스트림 분리를 정의한다.
 
-이 계약을 소비하는 쪽은 셋이다. Claude Code 의 MCP 서버(prj20 `f-claude-plugins/fCapture/`), 쉘 래퍼 스크립트, 그리고 Keyboard Maestro 매크로다. 셋 모두 stdout 을 파싱하기 전에 종료 코드를 먼저 본다는 전제로 작성한다.
+이 계약을 소비하는 쪽은 셋이다. Claude Code 의 MCP 서버(prj20 `f-claude-plugins/fCapture/`), 셸 래퍼 스크립트, 그리고 Keyboard Maestro 매크로다. 셋 모두 stdout 을 파싱하기 전에 종료 코드를 먼저 본다는 전제로 작성한다.
 
 # 종료 코드 규약
 

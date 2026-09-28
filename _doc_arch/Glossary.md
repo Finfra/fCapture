@@ -6,7 +6,7 @@ date: 2026-06-15
 
 > 개정 (2026-07-20, Issue24): Issue23 이 🔧 [FIXME] 로 보존한 코드 오기 3건(`Usage.txt` `-r, --region` 병기, 프리셋 dead branch, `printHelp` flash 기본값)을 코드에서 해소하고 마커를 제거함. `printHelp` fallback 에 누락돼 있던 `-r` 프리셋 항목도 함께 추가함.
 >
-> 개정 (2026-07-20, Issue23): `_doc_arch` ↔ 소스 정합성 감사. alias 표를 CLI(`parseTargetType`)와 JSON decoder(`TargetType.init(from:)`) 두 경로로 분리 기술함 — `region` 은 CLI 전용 alias 이며 설정 파일에서는 동작하지 않음. 버전 하드코딩을 VERSION 파일 참조로 치환하고, 코드측 오기 2건에 🔧 [FIXME] 를 부착함.
+> 개정 (2026-07-20, Issue23): `_doc_arch` ↔ 소스 정합성 감사. alias 표를 CLI(`parseTargetType`)와 JSON decoder(`TargetType.init(from:)`) 두 경로로 분리 기술함 — `region` 은 CLI 전용 alias 이며 설정 파일에서는 동작하지 않음. 버전 하드코딩을 VERSION 파일 참조로 치환하고, 코드 측 오기 2건에 🔧 [FIXME] 를 부착함.
 >
 > 개정 (2026-06-15): 코드(`ScreenCaptureApp.swift` TargetType·parseTargetType·captureSingleImage, `Usage.txt`)와 대조하여 target 값 목록을 정정함.
 > 구 표기(`window`/`screen:N`/`region`/`staticRegion`)는 코드 진화 과정에서 canonical 이 `_` 접미 명칭(`window_pointer`/`window_active`/`window_flash`/`region_user`/`region_static`)으로 분화됨(Issue8 이후). 누락되어 있던 `scroll_capture` 모드와 `relay`·`window_flash`·결과 형식 용어를 추가함.
@@ -105,7 +105,7 @@ canonical 값은 `_` 접미 명칭이며, 일부 구 표기는 코드에서 alia
 * 영역 캡처 프리셋은 **`-r` 단독 형태만** 인식된다(`parseArguments`). `--region` 은 프리셋이 아니라 정적 영역 좌표 옵션(`--region x,y,w,h`)이다.
 * 플래시 피드백 기본값은 **ON** 이다(`config.windowFlash ?? true`). 끄려면 `--no-flash` 를 명시한다.
 
-> 이력 (Issue24, 2026-07-20): 위 두 항목은 Issue23 감사에서 코드측 오기로 적발되어 🔧 [FIXME] 로 보존했던 것을 해소한 결과다. 번들 `Usage.txt` 의 `-r, --region` 프리셋 병기를 `-r` 단독으로 정정했고, 프리셋 분기의 dead branch `case "-r", "--region":` 에서 도달 불가 값을 제거했으며, `printHelp` fallback 의 flash 기본값 표기를 `--flash` 쪽으로 바로잡았다.
+> 이력 (Issue24, 2026-07-20): 위 두 항목은 Issue23 감사에서 코드 측 오기로 적발되어 🔧 [FIXME] 로 보존했던 것을 해소한 결과다. 번들 `Usage.txt` 의 `-r, --region` 프리셋 병기를 `-r` 단독으로 정정했고, 프리셋 분기의 dead branch `case "-r", "--region":` 에서 도달 불가 값을 제거했으며, `printHelp` fallback 의 flash 기본값 표기를 `--flash` 쪽으로 바로잡았다.
 
 # 용어 변경 이력
 
