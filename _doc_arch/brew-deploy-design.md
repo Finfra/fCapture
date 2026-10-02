@@ -195,7 +195,7 @@ brew update && brew upgrade fcapture && fcapture --version
 * 배포 채널: **custom tap** `Finfra/homebrew-tap` (형제 CLI 공유).
 * 배포 방식: **pre-built binary release asset** (universal2) — 형제 tap 컨벤션 일치 + Xcode 의존 제거. (초기 source-build 안에서 변경)
 * 버전 SSOT: `{git_root}/VERSION` 단일 원천 → `buildAndTest.sh` 가 빌드 전 `appVersion` sed 주입. Formula `version`·`sha256` 는 릴리즈 시 갱신.
-* 라이선스: 소스 **Apache-2.0** + 훅 ①상표(`TRADEMARK.md`) ②공식 배포본 약관(`DISTRIBUTION-TERMS.md`, 조직당 동시 250 카피 무료) — 2026-09-27 Issue29, 정본 `___architect/_doc_arch/license-profiles.md` §4. v1.0.18 까지의 배포본은 PolyForm Noncommercial 1.0.0 으로 남는다. tarball 에 LICENSE·NOTICE·약관 문서 동봉. 약관 v1.2 재동기와 공식 빌드 구분 표식(`resources/official/` → Mach-O 섹션, `--version` 2줄째)은 Issue30.
+* 라이선스: 소스 **Apache-2.0** + 훅 ①상표(`TRADEMARK.md`) ②공식 배포본 약관(`DISTRIBUTION-TERMS.md`, 조직당 동시 250 카피 무료) — 2026-09-27 Issue29, 정본 `___oracle/_doc_arch/license-profiles.md` §4. v1.0.18 까지의 배포본은 PolyForm Noncommercial 1.0.0 으로 남는다. tarball 에 LICENSE·NOTICE·약관 문서 동봉. 약관 v1.2 재동기와 공식 빌드 구분 표식(`resources/official/` → Mach-O 섹션, `--version` 2줄째)은 Issue30.
 * 명령 이름: brew 설치본 `fcapture`(소문자). case-insensitive APFS 라 개발 머신은 로컬 `~/.bin/fCapture` 가 PATH shadow(사용자 무관).
 
 # 변경 이력 기준
