@@ -1,9 +1,9 @@
 class Fcapture < Formula
   desc "macOS screen capture CLI (CoreGraphics) with JSON/YAML presets"
   homepage "https://github.com/Finfra/fCapture"
-  url "https://github.com/Finfra/fCapture/releases/download/v1.0.18/fCapture-1.0.18.tar.gz"
-  version "1.0.18"
-  sha256 "4fbba5c9c834838db2b230c7781bd698536fc2e35729ecd05fc271dfb9745cde"
+  url "https://github.com/Finfra/fCapture/releases/download/v1.0.19/fCapture-1.0.19.tar.gz"
+  version "1.0.19"
+  sha256 "d137a47af3f6f07d9e1da1e39d2561d52920128aeeece33a07580a0975173c9e"
   license "Apache-2.0"
 
   depends_on :macos
