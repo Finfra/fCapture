@@ -24,12 +24,12 @@ fCapture는 설정을 **JSON 파일**로 받지만(`loadConfig`는 JSON 전용),
 
 | 파일 | 역할 |
 | :--- | :--- |
-| `~/.fCapture/jm4/t4.default.yml` | 값 저장소(SSOT) — capturePath, target, fileFormat, flash, shadow, relay 등 |
+| `~/.fCapture/jm4/jm4.default.yml` | 값 저장소(SSOT) — capturePath, target, fileFormat, flash, shadow, relay 등 |
 | `~/_doc/1.Area/_memo/t4.default_jm4.yml` | 편집 편의용 심볼릭 링크 → 위 실제 파일 |
-| `~/.fCapture/jm4/jm4_Screen.json` | 화면 캡처 진입 JSON — 필드를 `{...t4.default.yml}` 로 참조 |
+| `~/.fCapture/jm4/jm4_Screen.json` | 화면 캡처 진입 JSON — 필드를 `{...jm4.default.yml}` 로 참조 |
 | `~/.fCapture/jm4/jm4_Window/Region/Scroll.json` | 같은 YAML 참조, target 종류만 다른 래퍼 |
 
-## YAML 예시 (t4.default.yml)
+## YAML 예시 (jm4.default.yml)
 
 ```yaml
 capturePath: 0
@@ -50,13 +50,13 @@ relay: 3   # 캡처 N초 지연 후 실행
 
 ```json
 {
-    "target": "screen:{~/.fCapture/jm4/t4.default.yml}",
-    "capturePath": "{~/.fCapture/jm4/t4.default.yml}",
-    "capturePathArray": "{~/.fCapture/jm4/t4.default.yml}",
-    "fileFormat": "{~/.fCapture/jm4/t4.default.yml}",
-    "window_flash": "{~/.fCapture/jm4/t4.default.yml}",
-    "shadow": "{~/.fCapture/jm4/t4.default.yml}",
-    "relay": "{~/.fCapture/jm4/t4.default.yml}"
+    "target": "screen:{~/.fCapture/jm4/jm4.default.yml}",
+    "capturePath": "{~/.fCapture/jm4/jm4.default.yml}",
+    "capturePathArray": "{~/.fCapture/jm4/jm4.default.yml}",
+    "fileFormat": "{~/.fCapture/jm4/jm4.default.yml}",
+    "window_flash": "{~/.fCapture/jm4/jm4.default.yml}",
+    "shadow": "{~/.fCapture/jm4/jm4.default.yml}",
+    "relay": "{~/.fCapture/jm4/jm4.default.yml}"
 }
 ```
 
