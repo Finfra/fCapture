@@ -1257,15 +1257,14 @@ struct ScreenCaptureApp {
                     // 백업 스크린 캡처 처리
                     if let backupPath = config.backupOtherScreen,
                        shouldBackupOtherScreen(target: target) {
-                        if let backupResult = performBackupCapture(
+                        captureResults.append(contentsOf: performBackupCapture(
                             mainTarget: target,
+                            requestedTargets: targets,
                             backupPath: backupPath,
                             config: config,
                             screenCapture: screenCapture,
                             resultFormat: resultFormat
-                        ) {
-                            captureResults.append(backupResult)
-                        }
+                        ))
                     }
                 }
                 
@@ -1654,29 +1653,53 @@ struct ScreenCaptureApp {
     }
 
     // MARK: - Backup Screen Functions
+    /// 백업 대상 판정 — `screen:N` 단일 화면 캡처일 때만 나머지 화면을 백업한다
     static func shouldBackupOtherScreen(target: String) -> Bool {
-        return target == "screen:1" || target == "screen:2"
+        guard target.hasPrefix("screen:") else { return false }
+        return Int(target.dropFirst("screen:".count)) != nil
     }
-    
-    static func getBackupTarget(for mainTarget: String) -> String? {
-        switch mainTarget {
-        case "screen:1": return "screen:2"
-        case "screen:2": return "screen:1"
-        default: return nil
-        }
+
+    /// 지정 화면(mainTarget)과 이번 실행에서 이미 요청된 화면(requestedTargets)을 뺀 모든 화면의 target 목록
+    static func getBackupTargets(for mainTarget: String, displayCount: Int, excluding requestedTargets: [String] = []) -> [String] {
+        guard shouldBackupOtherScreen(target: mainTarget), displayCount > 0 else { return [] }
+        let excluded = Set(requestedTargets + [mainTarget])
+        return (1...displayCount)
+            .map { "screen:\($0)" }
+            .filter { !excluded.contains($0) }
     }
-    
+
+    /// 지정 화면 이외의 모든 화면을 backupPath 에 `backup_` 접두사로 저장한다. 화면별로 독립 처리(한 화면 실패가 나머지를 막지 않음)
     static func performBackupCapture(
         mainTarget: String,
+        requestedTargets: [String] = [],
+        backupPath: String,
+        config: ScreenCaptureConfig,
+        screenCapture: ScreenCapture,
+        resultFormat: ScreenCaptureConfig.ResultFormat
+    ) -> [CaptureResult] {
+        let backupTargets = getBackupTargets(
+            for: mainTarget,
+            displayCount: screenCapture.getAvailableDisplays().count,
+            excluding: requestedTargets
+        )
+        return backupTargets.compactMap {
+            performSingleBackupCapture(
+                backupTarget: $0,
+                backupPath: backupPath,
+                config: config,
+                screenCapture: screenCapture,
+                resultFormat: resultFormat
+            )
+        }
+    }
+
+    static func performSingleBackupCapture(
+        backupTarget: String,
         backupPath: String,
         config: ScreenCaptureConfig,
         screenCapture: ScreenCapture,
         resultFormat: ScreenCaptureConfig.ResultFormat
     ) -> CaptureResult? {
-        guard let backupTarget = getBackupTarget(for: mainTarget) else {
-            return nil
-        }
-        
         do {
             // 백업 스크린 캡처
             let backupImage = try captureSingleImage(
