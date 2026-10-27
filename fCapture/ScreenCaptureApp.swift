@@ -1722,8 +1722,9 @@ struct ScreenCaptureApp {
             let backupURL = URL(fileURLWithPath: expandedBackupPath)
             let backupFileURL = backupURL.appendingPathComponent(backupFileName)
             
-            // 백업 이미지 저장
+            // 백업 이미지 저장 — 백업 폴더가 없으면 만든다 (없는 채로 저장하면 매번 바탕화면 폴백으로 샌다)
             do {
+                try FileManager.default.createDirectory(at: backupURL, withIntermediateDirectories: true)
                 try screenCapture.saveImage(backupImage, to: backupFileURL)
                 if resultFormat == .text {
                     logI("백업 스크린샷이 저장되었습니다: \(backupFileURL.path)")

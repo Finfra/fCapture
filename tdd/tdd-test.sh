@@ -204,6 +204,29 @@ EOF
     finish path-array-dir-create
 }
 
+# 12. screen:N 캡처 시 지정 화면 이외 모든 화면이 backupOtherScreen 경로에 backup_ 접두로 저장된다
+#     (종전: screen:1↔2 짝 하나만 — 3대 이상 디스플레이에서 screen3·4 누락)
+t_backup_other_screens() {
+    begin backup-other-screens
+    local displays; displays="$(system_profiler SPDisplaysDataType 2>/dev/null | grep -c 'Resolution:')"
+    local expected=$((displays - 1))
+    local main="$WORK/out-backup-main" backup="$WORK/out-backup"
+    cat >"$WORK/backup.json" <<EOF
+{"target": "$SCREEN_TARGET", "capturePath": "$main", "fileFormat": "main_%target", "result": "onlyPath", "backupOtherScreen": "$backup"}
+EOF
+    run "$WORK/backup.json"
+    check "exit 0" rc_is 0
+    check "지정 화면 저장 ($main/main_screen1.png)" [ -f "$main/main_screen1.png" ]
+    local count; count="$(find "$backup" -name 'backup_*.png' 2>/dev/null | grep -c '')"
+    check "백업 ${expected}장 = 디스플레이 ${displays}개 - 지정 1개 (실제 ${count}장)" [ "$count" == "$expected" ]
+    check "백업에 지정 화면(screen1) 없음" [ -z "$(find "$backup" -name '*screen1.png' 2>/dev/null)" ]
+    local n
+    for ((n = 2; n <= displays; n++)); do
+        check "백업 screen$n 존재" [ -n "$(find "$backup" -name "backup_*screen$n.png" 2>/dev/null)" ]
+    done
+    finish backup-other-screens
+}
+
 # 11. 공식 빌드만 Official Build 구성요소(resources/official/)를 담는다 — 소스 빌드는 담지 않는다 (Issue30)
 #     공식 빌드는 deploy-brew.sh --build-only 산출물(universal2 · gh·Formula·소스 무접촉 — 이 목표만 빌드가 돈다).
 #     반복 실행은 FCAPTURE_OFFICIAL_BIN=<이미 만든 공식 빌드> 로 빌드를 건너뛴다
@@ -234,7 +257,7 @@ t_official_build_marker() {
     finish official-build-marker
 }
 
-ALL_IDS=(version-flag invalid-target-exit1 failure-exit-code-nonzero filename-id-zeropad companion-yaml-lookup window-pointer-onlypath relay-delay path-array-dir-create official-build-marker)
+ALL_IDS=(version-flag invalid-target-exit1 failure-exit-code-nonzero filename-id-zeropad companion-yaml-lookup window-pointer-onlypath relay-delay path-array-dir-create official-build-marker backup-other-screens)
 IDS=("$@")
 [[ ${#IDS[@]} -eq 0 ]] && IDS=("${ALL_IDS[@]}")
 
