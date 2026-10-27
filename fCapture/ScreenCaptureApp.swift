@@ -440,7 +440,7 @@ struct CLIOverrides {
 // MARK: - CLI Main Function
 @main
 struct ScreenCaptureApp {
-    static let appVersion = "1.0.18"
+    static let appVersion = "1.0.19"
 
     /// 공식 빌드 배너를 반환합니다. deploy-brew.sh 가 resources/official/banner.txt 를
     /// 링크 시 `__TEXT,__fc_banner` 섹션으로 삽입한 바이너리에만 있고, 소스 빌드는 nil (Issue30).
